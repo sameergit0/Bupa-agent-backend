@@ -99,7 +99,7 @@ async def handle_ai_chat_success(sid, payload):
     logger.info(f"[ai_chat_success] sid={sid} sessionId={session_id} userId={user_id} message={message!r}")
 
     chat = sid_to_chat.get(sid)
-    if not chat:
+    if not chat or chat.user_id != user_id:
         chat = LLMChatSession(user_id=user_id, access_token=access_token)
         sid_to_chat[sid] = chat
         
