@@ -87,8 +87,12 @@ class DynamicConstants:
         self.hc_cat_lookup = {item.get('label'): item.get('categoryName') for item in home_care_details.get('data', {}).get('category', []) if item.get('label') and item.get('categoryName')}
 
         home_base_details = self.fetch_home_base_details()
-        self.hb_product_names = [item.get('label') for item in home_base_details.get('data', {}).get('products', []) if item.get('label')]
-        self.hb_product_lookup = {item.get('label'): item.get('id') for item in home_base_details.get('data', {}).get('products', []) if item.get('label') and item.get('id')}
+        if home_base_details and home_base_details.get('data') and home_base_details.get('data').get('products'):
+            self.hb_product_names = [item.get('label') for item in home_base_details.get('data', {}).get('products', []) if item.get('label')]
+            self.hb_product_lookup = {item.get('label'): item.get('id') for item in home_base_details.get('data', {}).get('products', []) if item.get('label') and item.get('id')}
+        else:
+            self.hb_product_names = []
+            self.hb_product_lookup = {}
 
         report_types = self.fetch_report_types()
         self.report_type_names = [item.get('reportType') for item in report_types.get('data', {}).get('reportTypes', []) if item.get('reportType')]

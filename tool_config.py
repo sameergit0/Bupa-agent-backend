@@ -11,7 +11,7 @@ if not GEMINI_API_KEY:
 
 add_note_declaration = {
     "name": "add_note",
-    "description": "Add a new, plain-text note to a specific member's record in the Care Navigator platform.",
+    "description": "Adds a new note to the record of the currently logged-in member.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -26,7 +26,7 @@ add_note_declaration = {
 
 disenroll_member_declaration = {
     "name": "disenroll_member",
-    "description": "Disenrolls a member from the program. This tool requires a specific reason from a predefined list and a detailed note explaining the disenrollment.",
+    "description": "Removes the current logged-in member from the program. This tool requires a specific reason from a predefined list and a detailed note explaining the disenrollment.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -45,7 +45,7 @@ disenroll_member_declaration = {
 
 add_health_metric_declaration = {
     "name": "add_health_metric",
-    "description": "Records a specific health metric and its value for a member on a given date.",
+    "description": "Records a specific health metric and its value for the current logged-in member on a given date.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -83,7 +83,7 @@ fetch_services_by_category_declaration = {
 
 add_new_service_declaration = {
     "name": "add_new_service",
-    "description": "Schedules a new service for a member under a specific category on a given date and time.",
+    "description": "Schedules a new service for the currently logged-in member under a specific category on a given date and time.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -114,7 +114,7 @@ add_new_service_declaration = {
 
 raise_new_ticket_declaration = {
     "name": "raise_new_ticket",
-    "description": "Creates a new support ticket on behalf of a member.",
+    "description": "Creates a new support ticket for the currently logged-in member.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -152,7 +152,7 @@ fetch_program_details_declaration = {
 
 assign_program_declaration = {
     "name": "assign_program",
-    "description": "Assigns a new program to a member.",
+    "description": "Enrolls the current logged-in member in a new health program.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -175,7 +175,7 @@ assign_program_declaration = {
 
 fetch_user_assigned_programs_declaration = {
     "name": "user_assigned_programs",
-    "description": "Fetches a list of all programs currently assigned to the member. This includes the details of each program's conditions and pathways, along with their current status (active, stopped, or notset).",
+    "description": "Fetches a list of all programs currently assigned to the logged-in member, including details on conditions, pathways, and their current status (active, stopped, notset).",
     "parameters": {
         "type": "object",
         "properties": {},
@@ -185,7 +185,7 @@ fetch_user_assigned_programs_declaration = {
 
 stop_condition_declaration = {
     "name": "stop_condition",
-    "description": "Stops an active condition on a member's profile.",
+    "description": "Stops an active condition or pathway for the currently logged-in member.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -204,7 +204,7 @@ stop_condition_declaration = {
 
 restart_condition_declaration = {
     "name": "restart_condition",
-    "description": "Restarts a previously stopped condition for a member.",
+    "description": "Restarts a previously stopped condition or pathway for the current logged-in member.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -223,7 +223,7 @@ restart_condition_declaration = {
 
 remove_condition_declaration = {
     "name": "remove_condition",
-    "description": "Removes a specific health condition, including its associated pathway, from a member's profile.",
+    "description": "Permanently removes a specific health condition, and its associated pathways, from the profile of the currently logged-in member.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -257,7 +257,7 @@ fetch_available_pathways_for_program_condition_declaration = {
 
 change_pathway_declaration = {
     "name": "change_pathway",
-    "description": "Changes a member’s assigned pathway for a specific condition.",
+    "description": "Changes the assigned pathway for the currently logged-in member within a specific program and condition.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -286,9 +286,9 @@ change_pathway_declaration = {
     }
 }
 
-fetch_member_scheduled_calls_declaration = {
-    "name": "member_scheduled_calls",
-    "description": "Fetches a list of all currently scheduled calls for a member.",
+fetch_member_upcoming_scheduled_call_declaration = {
+    "name": "member_upcoming_scheduled_call",
+    "description": "Fetches the next upcoming scheduled call for the currently logged-in member. It returns the earliest scheduled call from the current date and time.",
     "parameters": {
         "type": "object",
         "properties": {},
@@ -298,7 +298,7 @@ fetch_member_scheduled_calls_declaration = {
 
 cancel_or_reschedule_call_declaration = {
     "name": "cancel_or_reschedule_call",
-    "description": "Cancels or re-schedules a member's scheduled call appointment.",
+    "description": "Modifies the next upcoming scheduled call for the logged-in member.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -334,7 +334,7 @@ cancel_or_reschedule_call_declaration = {
 
 fetch_available_tickets_declaration = {
     "name": "available_tickets",
-    "description": "Fetches a comprehensive list of all support tickets currently associated with the member's profile.",
+    "description": "Fetches a comprehensive list of all support tickets currently associated with the logged-in member's profile.",
     "parameters": {
         "type": "object",
         "properties": {},
@@ -344,7 +344,7 @@ fetch_available_tickets_declaration = {
 
 add_comment_on_ticket_declaration = {
     "name": "add_comment_on_ticket",
-    "description": "Adds a new comment to an existing support ticket.",
+    "description": "Adds a new comment to an existing support ticket for the logged-in member.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -378,7 +378,7 @@ fetch_lab_providers_declaration = {
 
 lab_request_declaration = {
     "name": "lab_request",
-    "description": "Submits a request to schedule a lab test for a member.",
+    "description": "Submits a request to schedule a lab test for the current logged-in member.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -470,7 +470,7 @@ fetch_homecare_health_products_declaration = {
 
 home_care_request_declaration = {
     "name": "home_care_request",
-    "description": "ubmits a request for a home care service or product for a member.",
+    "description": "Submits a request for a home care service or product for the current logged-in member.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -528,7 +528,7 @@ home_care_request_declaration = {
 
 homebase_vaccine_request_declaration = {
     "name": "homebase_vaccine_request",
-    "description": "Submits a request to schedule a vaccine service to be administered at a member's home.",
+    "description": "Submits a request to schedule a vaccine service to be administered at the current logged-in member's home.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -594,7 +594,7 @@ fetch_userinfo_by_name_query_declaration = {
 
 schedule_call_with_cn_declaration = {
     "name": "schedule_call_with_cn",
-    "description": "Schedules a new phone call between a member and their Care Navigator.",
+    "description": "Schedules a new phone call between a specific member and their Care Navigator.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -613,7 +613,7 @@ schedule_call_with_cn_declaration = {
 
 fetch_member_profile_details_declaration = {
     "name": "member_profile_details",
-    "description": "Fetches the comprehensive profile details for the member. This includes personal information (age, city), membership and contract details, health metrics (BMI, HRA score), and all currently assigned programs, conditions, and their pathway statuses.",
+    "description": "Fetches a comprehensive profile of the currently logged-in member. This includes personal information (e.g. name, age, city, mobile number), membership and contract details, health metrics (BMI, HRA score), and all currently assigned programs, conditions, and their pathway statuses.",
     "parameters": {
         "type": "object",
         "properties": {},
@@ -623,7 +623,7 @@ fetch_member_profile_details_declaration = {
 
 fetch_user_health_metric_data_declaration = {
     "name": "user_health_metric_data",
-    "description": "Fetches historical and logged data for a specific health metric of the member. This tool is used to retrieve a time-series of a member's health data for a given metric name.",
+    "description": "Fetches historical and time-series data for a specific health metric for the currently logged-in member.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -638,7 +638,7 @@ fetch_user_health_metric_data_declaration = {
 
 fetch_member_notes_history_declaration = {
     "name": "member_notes_history",
-    "description": "Fetches the complete history of all notes that have been added to a member's profile.",
+    "description": "Fetches the complete history of all notes that have been added to the profile of the currently logged-in member.",
     "parameters": {
         "type": "object",
         "properties": {},
@@ -648,7 +648,7 @@ fetch_member_notes_history_declaration = {
 
 fetch_member_journey_declaration = {
     "name": "member_journey",
-    "description": "Fetches a chronological list of all key events and interactions for a member.",
+    "description": "Fetches a complete, chronological 360° history of all key events and interactions for the currently logged-in member.",
     "parameters": {
         "type": "object",
         "properties": {},
@@ -658,7 +658,7 @@ fetch_member_journey_declaration = {
 
 add_member_record_declaration = {
     "name": "add_member_record",
-    "description": "Add a new record for a member, specifying the report type, a descriptive text.",
+    "description": "Adds a new record to the currently logged-in member's profile.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -677,7 +677,7 @@ add_member_record_declaration = {
 
 fetch_health_locker_files_declaration = {
     "name": "health_locker_files",
-    "description": "Fetches a list of files from the user's health locker for a specified report category.",
+    "description": "FFetches a list of files and documents from the currently logged-in member's health locker for a specified report category.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -692,7 +692,7 @@ fetch_health_locker_files_declaration = {
 
 view_specific_record_declaration = {
     "name": "view_specific_record",
-    "description": "Allows a care navigator to view a specific file from member's health locker by providing its report category and exact name.",
+    "description": "Views a specific file from the currently logged-in member's health locker.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -711,7 +711,7 @@ view_specific_record_declaration = {
 
 remove_specific_record_declaration = {
     "name": "remove_specific_record",
-    "description": "Deletes a specific file from a member's health locker, identified by its report category and exact file name.",
+    "description": "Permanently deletes a specific file from the currently logged-in member's health locker.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -789,7 +789,7 @@ fetch_members_stratification_declaration = {
 
 fetch_pathway_breakup_declaration = {
     "name": "get_all_members_pathway_breakup",
-    "description": "Retrieves a categorized summary of all members' progress on a health pathway under a care navigator, based on a specific health condition.",
+    "description": "Retrieves a categorized summary of all members progress on a health pathway under a care navigator, based on a specific health condition.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -804,7 +804,7 @@ fetch_pathway_breakup_declaration = {
 
 fetch_new_report_members_declaration = {
     "name": "get_new_report_members",
-    "description": "Retrieves a list of members who have new reports within a specified date range.",
+    "description": "Retrieves a list of members under the care navigator who have new reports within a specified date range.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -926,12 +926,35 @@ fetch_calender_calls_declaration = {
     }
 }
 
+add_bmi_declaration = {
+    "name": "add_bmi",
+    "description": "Calculates and records the Body Mass Index (BMI) for the currently logged-in member using their height and weight.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "height": {
+                "type": "number",
+                "description": "The member's height in centimeters (cm)."
+            },
+            "weight": {
+                "type": "number",
+                "description": "The member's weight in kilograms (kg)."
+            },
+            "metricDate": {
+                "type": "string",
+                "description": "The date when the height and weight were measured, in 'YYYY-MM-DD' format."
+            }
+        },
+        "required": ["height", "weight","metricDate"]
+    }
+}
+
 TOOLS = [
     types.Tool(
         function_declarations=[add_note_declaration, disenroll_member_declaration, add_health_metric_declaration, fetch_services_by_category_declaration, add_new_service_declaration,
                                raise_new_ticket_declaration, fetch_program_details_declaration, assign_program_declaration, fetch_user_assigned_programs_declaration, 
                                stop_condition_declaration, restart_condition_declaration, remove_condition_declaration, fetch_available_pathways_for_program_condition_declaration,
-                               change_pathway_declaration, fetch_member_scheduled_calls_declaration, cancel_or_reschedule_call_declaration, fetch_available_tickets_declaration,
+                               change_pathway_declaration, fetch_member_upcoming_scheduled_call_declaration, cancel_or_reschedule_call_declaration, fetch_available_tickets_declaration,
                                add_comment_on_ticket_declaration, fetch_lab_providers_declaration, lab_request_declaration, fetch_homecare_lab_providers_declaration, 
                                fetch_homecare_health_products_declaration, homebase_vaccine_request_declaration, fetch_scheduled_calls_under_cn_declaration, fetch_userinfo_by_name_query_declaration,
                                schedule_call_with_cn_declaration, fetch_member_profile_details_declaration, fetch_user_health_metric_data_declaration, fetch_member_notes_history_declaration,
@@ -939,6 +962,6 @@ TOOLS = [
                                remove_specific_record_declaration, fetch_all_members_scheduled_calls_under_cn_declaration, fetch_todays_tasks_declaration,
                                fetch_weekly_summary_declaration, fetch_members_stratification_declaration, fetch_pathway_breakup_declaration, fetch_new_report_members_declaration,
                                fetch_requested_services_declaration, fetch_working_plans_and_breaks_declaration, add_break_declaration, delete_break_declaration,
-                               search_view_member_under_cn_declaration, fetch_calender_calls_declaration]
+                               search_view_member_under_cn_declaration, fetch_calender_calls_declaration, add_bmi_declaration]
     )
 ]

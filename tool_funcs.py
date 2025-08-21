@@ -286,8 +286,8 @@ def change_pathway(dynamic_constants: DynamicConstants, programName: str, condit
     except Exception as e:
         return {"error": str(e)}
 
-def member_scheduled_calls(dynamic_constants: DynamicConstants):
-    """Fetches appointmnet details of the member"""
+def member_upcoming_scheduled_call(dynamic_constants: DynamicConstants):
+    """Fetches upcoming appointmnet details of the member"""
 
     endpoint_name = "/fetch_user_specific_calls"
     data = {"userId": dynamic_constants.user_id}
@@ -304,10 +304,10 @@ def member_scheduled_calls(dynamic_constants: DynamicConstants):
         return {"error": str(e)}
     
 def cancel_or_reschedule_call(dynamic_constants: DynamicConstants, action: str, old_slot_date: str, old_slot_time: str, new_slot: str = "", streamName: str = "", reasonForCancellation: str = ""):
-    """Cancel or re-schedule call for the member"""
+    """Cancel or re-schedule upcoming call for the member"""
 
     endpoint_name = "/cancel_or_reschedule_appointment"
-    scheduled_calls_data = member_scheduled_calls(dynamic_constants)
+    scheduled_calls_data = member_upcoming_scheduled_call(dynamic_constants)
     all_scheduled_calls = scheduled_calls_data["calls"]
     target_appointment = next((call for call in all_scheduled_calls if call.get("date") == old_slot_date and call.get("time") == old_slot_time), None)
     if not target_appointment:
@@ -871,6 +871,35 @@ def get_calender_calls(dynamic_constants: DynamicConstants):
         return output
     except Exception as e:
         return {"error": str(e)}    
+    
+def add_bmi(dynamic_constants: DynamicConstants, height: int, weight: int, metricDate: str):
+    """Log  BMI for the member"""
+
+    endpoint_name = "/add_metrics_weight"
+    metricsName = "BMI"
+    metrics_lookup = {entry["metricsName"]: entry for entry in dynamic_constants.metrics_details_list}
+    details = metrics_lookup.get(metricsName)
+    if details is None:
+        raise ValueError(f"Unknown metricName: {metricsName!r}")
+    metricsId = details["metricsId"]
+    keyword = details["keyword"]
+    bmi = round(weight / ((height / 100) ** 2), 1)
+    if bmi < 18.5:
+        metricsObservation = "Underweight"
+    elif 18.5 <= bmi < 24.9:
+        metricsObservation = "Healthy"
+    elif 25.0 <= bmi < 29.9:
+        metricsObservation = "Overweight"
+    else:
+        metricsObservation = "Obese"
+
+    data = {"formData": {"userId": dynamic_constants.user_id, "metricsId": metricsId, "metricsName": metricsName, "metricsVal": bmi, "metricsWeight": weight, "metricsHeight": height, "metricsObservation": metricsObservation, "metricsDate": metricDate, "keyword": keyword}}
+
+    try:
+        output = make_request(endpoint_name=endpoint_name, data=data)
+        return output
+    except Exception as e:
+        return {"error": str(e)}
 
 TOOL_MAP = {
     "add_note": add_note,
@@ -887,7 +916,7 @@ TOOL_MAP = {
     "remove_condition": remove_condition,
     "available_pathways_for_program_condition": available_pathways_for_program_condition,
     "change_pathway": change_pathway,
-    "member_scheduled_calls": member_scheduled_calls,
+    "member_upcoming_scheduled_call": member_upcoming_scheduled_call,
     "cancel_or_reschedule_call": cancel_or_reschedule_call,
     "available_tickets": available_tickets,
     "add_comment_on_ticket": add_comment_on_ticket,
@@ -919,5 +948,6 @@ TOOL_MAP = {
     "add_break": add_break,
     "delete_break": delete_break,
     "search_view_member_under_cn": search_view_member_under_cn,
-    "get_calender_calls": get_calender_calls
+    "get_calender_calls": get_calender_calls,
+    "add_bmi": add_bmi
 }
