@@ -11,7 +11,7 @@ def add_note(dynamic_constants: DynamicConstants, notes: str):
     data = {"userId": dynamic_constants.user_id, "notes": notes}
 
     try: 
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -24,7 +24,7 @@ def disenroll_member(dynamic_constants: DynamicConstants, reason: str, disEnroll
     data = {"userId": dynamic_constants.user_id, "disEnrollmentReason": disEnrollmentReason, "disEnrollmentNote": disEnrollmentNote}
 
     try:
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -44,7 +44,7 @@ def add_health_metric(dynamic_constants: DynamicConstants, metricsName: str, met
     print(data)
     
     try:
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -59,7 +59,7 @@ def services_by_category(dynamic_constants: DynamicConstants, categoryName: str)
     data = {"categoryId": categoryId}
 
     try:
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -84,7 +84,7 @@ def add_new_service(dynamic_constants: DynamicConstants, categoryName: str, serv
     data = {"userId": dynamic_constants.user_id, "formData": {"pathwayId": pathwayId, "categoryId": dynamic_constants.category_lookup[categoryName], "serviceId": serviceId, "date": date, "time": time, "notes": notes}}
     
     try:
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -98,7 +98,7 @@ def raise_new_ticket(dynamic_constants: DynamicConstants, title: str, ticketType
     data = {"membershipNo": membershipNo, "type": type, "title": title, "priority": priority, "description": description, "files": "[]"}
 
     try:
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -110,7 +110,7 @@ def program_details(dynamic_constants: DynamicConstants):
     data = {"userId": dynamic_constants.user_id}
 
     try:
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -148,7 +148,7 @@ def assign_program(dynamic_constants: DynamicConstants, programName: str, condit
     data = {"userId": dynamic_constants.user_id, "formData": {"programId": programId, "conditionId": conditionId, "pathwayId": pathwayId}}
 
     try:
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -181,7 +181,7 @@ def stop_condition(dynamic_constants: DynamicConstants, pathwayName: str, remark
     data = {"userId":dynamic_constants.user_id, "pathwayId": pathwayId, "pathwayRelId": pathwayRelId, "remarks": remarks}
 
     try:
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -204,7 +204,7 @@ def restart_condition(dynamic_constants: DynamicConstants, pathwayName: str, rem
     data = {"userId":dynamic_constants.user_id, "pathwayId": pathwayId, "pathwayRelId": pathwayRelId, "remarks": remarks}
 
     try:
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -228,7 +228,7 @@ def remove_condition(dynamic_constants: DynamicConstants, conditionName: str):
     data = {"userId":dynamic_constants.user_id, "pathwayRelId": pathwayRelId}
 
     try:
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -250,7 +250,7 @@ def available_pathways_for_program_condition(dynamic_constants: DynamicConstants
     data = {"userId": dynamic_constants.user_id, "programId": programId, "conditionId": conditionId, "oldPathwayId": oldPathwayId}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -281,7 +281,7 @@ def change_pathway(dynamic_constants: DynamicConstants, programName: str, condit
     data = {"userId": dynamic_constants.user_id, "programId": programId, "conditionId": conditionId, "oldPathwayId": oldPathwayId, "pathwayId": newPathwayId, "notes": notes}
 
     try:
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
         return output 
     except Exception as e:
         return {"error": str(e)}
@@ -292,7 +292,7 @@ def member_upcoming_scheduled_call(dynamic_constants: DynamicConstants):
     endpoint_name = "/fetch_user_specific_calls"
     data = {"userId": dynamic_constants.user_id}
     try:
-        response = make_request(endpoint_name=endpoint_name, data=data)
+        response = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
         if response and response.get("code") == 200 and "calls" in response.get("data", {}):
             all_calls = response["data"]["calls"]
             scheduled_calls = [call for call in all_calls if call.get("nonScheduled") == "N"]
@@ -320,7 +320,7 @@ def cancel_or_reschedule_call(dynamic_constants: DynamicConstants, action: str, 
             "reasonForCancellation": reasonForCancellation if action == "cancel" else ""}
     
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -333,7 +333,7 @@ def available_tickets(dynamic_constants: DynamicConstants):
     data = {"perPage": 7, "pageNumber": 1, "membershipNo": membershipNo}
 
     try:
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -353,7 +353,7 @@ def add_comment_on_ticket(dynamic_constants: DynamicConstants, ticketTitle: str,
     data = {"comment": comment, "ticketId": encTicketId, "commentBy": "carenavigator"}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -366,7 +366,7 @@ def lab_providers(dynamic_constants: DynamicConstants, cityName: str):
     data = {"cityId": dynamic_constants.city_lookup.get(cityName), "membership": dynamic_constants.user_profile["data"]["info"]["membershipNumber"]}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -410,7 +410,7 @@ def lab_request(dynamic_constants: DynamicConstants, coPayment: str, preferredAp
         }
     }
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -422,7 +422,7 @@ def homecare_lab_providers(dynamic_constants: DynamicConstants, cityName: str):
 
     data = {"cityName": dynamic_constants.city_lookup.get(cityName), "membership": dynamic_constants.user_profile["data"]["info"]["membershipNumber"]}
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -434,7 +434,7 @@ def homecare_health_products(dynamic_constants: DynamicConstants, cityName: str,
 
     data = {"cityName": dynamic_constants.city_lookup.get(cityName), "categoryName": dynamic_constants.hc_cat_lookup.get(categoryName), "membership": dynamic_constants.user_profile["data"]["info"]["membershipNumber"]}
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -483,7 +483,7 @@ def home_care_request(dynamic_constants: DynamicConstants, coPayment: str, prefe
         }
     }
 
-    output = make_request(data=data, endpoint_name=endpoint_name)
+    output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
     return output
 
 def homebase_vaccine_request(dynamic_constants: DynamicConstants, cityName: str, productName: str, deductible: str, vaccine: str, district: str, nationality: str = "Saudi Arabian", remarks: str = ""):
@@ -510,7 +510,7 @@ def homebase_vaccine_request(dynamic_constants: DynamicConstants, cityName: str,
     }
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}   
@@ -523,7 +523,7 @@ def scheduled_calls_under_cn(dynamic_constants: DynamicConstants):
     data = {}
 
     try:
-        response = make_request(data=data, endpoint_name=endpoint_name)
+        response = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         if response and response.get("code") == 200 and "calls" in response.get("data", {}):
             all_calls = response["data"]["calls"]
             scheduled_calls = [call for call in all_calls if call.get("status") == "Scheduled"]
@@ -542,7 +542,7 @@ def userinfo_by_name_query(dynamic_constants: DynamicConstants, searchQuery: str
     data = {"searchStr": searchQuery, "appliedFilter": {}, "pageNumber": 1}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -561,7 +561,7 @@ def schedule_call_with_cn(dynamic_constants: DynamicConstants, memberName: str, 
     data = {"userId": userId,"date": appointmentDateTime}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -574,7 +574,7 @@ def member_profile_details(dynamic_constants: DynamicConstants):
     data = {"userId": dynamic_constants.user_id}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -592,7 +592,7 @@ def user_health_metric_data(dynamic_constants: DynamicConstants, metricName: str
     data = {"userId": dynamic_constants.user_id, "metricsId": metricsId}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -605,7 +605,7 @@ def member_notes_history(dynamic_constants: DynamicConstants):
     data = {"userId": dynamic_constants.user_id}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -618,7 +618,7 @@ def member_journey(dynamic_constants: DynamicConstants):
     data = {"membershipNumber": dynamic_constants.user_profile["data"]["info"]["membershipNumber"]}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -636,7 +636,7 @@ def add_member_record(dynamic_constants: DynamicConstants, reportType: str, desc
     data = {"userId": dynamic_constants.user_id, "formData": {"reportTypeId": dynamic_constants.report_type_lookup.get(reportType), "title": description, "file": file_data,"originalName": file_name}}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -649,7 +649,7 @@ def health_locker_files(dynamic_constants: DynamicConstants, reportType: str):
     data = {"userId": dynamic_constants.user_id, "reportTypeId": dynamic_constants.report_type_lookup.get(reportType)}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -671,7 +671,7 @@ def view_specific_record(dynamic_constants: DynamicConstants, reportType: str, f
             return {"error": f"File '{fileName}' not found under report type '{reportType}'."}
         
         data = {"fileId": file_id}
-        response = make_request(data=data, endpoint_name=endpoint_name)
+        response = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         file_url = response.get("data", {}).get("fileUrl")
         return {"File": webbrowser.open_new_tab(file_url)}
     except Exception as e:
@@ -695,7 +695,7 @@ def remove_specific_record(dynamic_constants: DynamicConstants, reportType: str,
         
         data = {"fileId": file_id}
 
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output
         
     except Exception as e:
@@ -709,7 +709,7 @@ def get_all_care_navigator_scheduled_calls(dynamic_constants: DynamicConstants, 
     data = {"startDate": startDate, "endDate": endDate, "pageNumber": 1}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -722,7 +722,7 @@ def get_todays_tasks(dynamic_constants: DynamicConstants):
     data = {}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}    
@@ -740,7 +740,7 @@ def get_weekly_summary(dynamic_constants: DynamicConstants, startDate: str):
         
         data = {"weekCount": weekCount}
 
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}  
@@ -753,7 +753,7 @@ def get_all_members_stratification(dynamic_constants: DynamicConstants, conditio
     data = {"extraParams": {"conditionId": dynamic_constants.condition_lookup.get(conditionName)}}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -766,7 +766,7 @@ def get_all_members_pathway_breakup(dynamic_constants: DynamicConstants, conditi
     data = {"conditionId": dynamic_constants.condition_lookup.get(conditionName)}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -779,7 +779,7 @@ def get_new_report_members(dynamic_constants: DynamicConstants, startDate: str, 
     data = {"requestStartDate": startDate, "requestEndDate": endDate, "pageNumber": 1}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -794,7 +794,7 @@ def get_requested_services(dynamic_constants: DynamicConstants, startDate: str, 
     data = {"requestType": request_type_code, "requestStartDate": startDate, "requestEndDate": endDate, "requestStatus": requestStatus}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -807,7 +807,7 @@ def get_working_plans_and_breaks(dynamic_constants: DynamicConstants):
     data = {}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
         return {"error": str(e)}
@@ -820,7 +820,7 @@ def add_break(dynamic_constants: DynamicConstants, stratDateTime: str, endDateTi
     data = {"start": stratDateTime, "end": endDateTime, "reason": reason}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -841,7 +841,7 @@ def delete_break(dynamic_constants: DynamicConstants, startDateTime: str, endDat
     data = {"breakId": breakId}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -854,7 +854,7 @@ def search_view_member_under_cn(dynamic_constants: DynamicConstants, searchStr: 
     data = { "searchStr": searchStr, "appliedFilter": {}, "pageNumber": 1, "messageStatus": "all"}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}
@@ -867,7 +867,7 @@ def get_calender_calls(dynamic_constants: DynamicConstants):
     data = {}
 
     try:
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}    
@@ -896,7 +896,7 @@ def add_bmi(dynamic_constants: DynamicConstants, height: int, weight: int, metri
     data = {"formData": {"userId": dynamic_constants.user_id, "metricsId": metricsId, "metricsName": metricsName, "metricsVal": bmi, "metricsWeight": weight, "metricsHeight": height, "metricsObservation": metricsObservation, "metricsDate": metricDate, "keyword": keyword}}
 
     try:
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": str(e)}

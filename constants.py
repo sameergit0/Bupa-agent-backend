@@ -6,8 +6,9 @@ import os
 import mimetypes
 
 class DynamicConstants:
-    def __init__(self, user_id):
+    def __init__(self, user_id, access_token):
         self.user_id = user_id
+        self.access_token = access_token
         self.user_profile = None
         self.disenrollment_reasons_list = []
         self.reason_names = []
@@ -134,7 +135,7 @@ class DynamicConstants:
 
         endpoint_name = "/fetch_user_profile_v2"
         data = {"userId": self.user_id}
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
         return output
 
     def fetch_disenrollment_reasons(self):
@@ -145,7 +146,7 @@ class DynamicConstants:
         programId = mp["programId"]
         conditionId = mp["conditionId"]
         data = {"userId": self.user_id, "programId": programId, "conditionId": conditionId}
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
         return output
 
     def fetch_health_metric_details(self):
@@ -153,7 +154,7 @@ class DynamicConstants:
 
         endpoint_name = "/fetch_generic_health_metrics"
         data = {"userId": self.user_id}
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
         return output
 
     def fetch_service_categories(self):
@@ -161,7 +162,7 @@ class DynamicConstants:
 
         endpoint_name = "/fetch_service_categories"
         data = {}
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
         return output
 
     def fetch_ticket_types(self):
@@ -169,7 +170,7 @@ class DynamicConstants:
 
         endpoint_name = "/fetch_all_ticket_types"
         data = {}
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
         return output
 
     def fetch_call_cancellation_streams(self):
@@ -177,7 +178,7 @@ class DynamicConstants:
 
         endpoint_name = "/fetch_call_status"
         data = {}
-        output = make_request(endpoint_name=endpoint_name, data=data)
+        output = make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
         return output
 
     def fetch_form_data_details(self):
@@ -185,7 +186,7 @@ class DynamicConstants:
 
         endpoint_name = "/fetch_form_data"
         data = {"membership": self.user_profile["data"]["info"]["membershipNumber"]}
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output
 
     def fetch_home_care_details(self):
@@ -193,7 +194,7 @@ class DynamicConstants:
 
         endpoint_name = "/fetch_home_care"
         data = {"membership": self.user_profile["data"]["info"]["membershipNumber"]}
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output
 
     def fetch_home_base_details(self):
@@ -201,7 +202,7 @@ class DynamicConstants:
 
         endpoint_name = "/fetch_home_base"
         data = {"membership": self.user_profile["data"]["info"]["membershipNumber"]}
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output
 
     def fetch_report_types(self):
@@ -209,7 +210,7 @@ class DynamicConstants:
 
         endpoint_name = "/fetch_report_types"
         data = {}
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output
 
     def fetch_conditions(self):
@@ -217,7 +218,7 @@ class DynamicConstants:
 
         endpoint_name = "/fetch_conditions"
         data = {}
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output
 
     def fetch_break_reasons(self):
@@ -225,5 +226,5 @@ class DynamicConstants:
 
         endpoint_name = "/fetch_break_reasons"
         data = {}
-        output = make_request(data=data, endpoint_name=endpoint_name)
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output

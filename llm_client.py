@@ -78,9 +78,10 @@ def _sleep_with_jitter(base: float, attempt: int) -> None:
     time.sleep(delay)
 
 class LLMChatSession:
-    def __init__(self, user_id: str):
+    def __init__(self, user_id: str, access_token: str):
         self.user_id = user_id
-        self.dynamic_constants = DynamicConstants(user_id)
+        self.access_token = access_token
+        self.dynamic_constants = DynamicConstants(user_id, access_token)
         self.dynamic_constants.load()
         
         session_tool_map = {}

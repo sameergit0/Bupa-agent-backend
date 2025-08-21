@@ -100,7 +100,7 @@ async def handle_ai_chat_success(sid, payload):
 
     chat = sid_to_chat.get(sid)
     if not chat:
-        chat = LLMChatSession(user_id=user_id)
+        chat = LLMChatSession(user_id=user_id, access_token=access_token)
         sid_to_chat[sid] = chat
         
     try:

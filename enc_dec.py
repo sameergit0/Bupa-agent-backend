@@ -43,7 +43,7 @@ def decrypt_data(encrypted_text: str) -> str:
 # result = decrypt_data(encrypted_text="ALNJa8IfeMc4937zj1RMzKb8+840b71pGDPO58SRZZkcneYuj7pGfJ+1nvFbJTrG4F8/OQ52gZjb+ZGsFo0i4A==")
 # print(result)
 
-def make_request(endpoint_name: str, data) -> dict[str, object]:
+def make_request(endpoint_name: str, data, access_token: str) -> dict[str, object]:
     """
     make request to get actual response for all the tools
     """
@@ -51,7 +51,7 @@ def make_request(endpoint_name: str, data) -> dict[str, object]:
     url = BASE_URL + endpoint_name
     headers = {
         "Content-Type": "application/json",
-        "Authorization": "Ymt4NjFteVRYSytSZzE4NXFLV0FQWG9zZUN4RGZWK1NEOHJnQS9sRkpwcW4xSEF1MklMeXZtZmw2bmJwNlRlYzBndllOQzRObzRUK1FnUC9WU1IxQmNxemF6M09keFNuWjg1N1NYNWdTcHJvQmxING1Xd0tDNzExaHBqUGlHWnl6RTRtMldZTkxJRzQ0MlEwVnY0UVhZak9BQW50RnpNVjhYZ3FkRGpkU1I4UElGTFZRU0hyd2JoYWdTOFdIaFNZWmNZYlZsaFphK1ZyMGVxYjY5Q1pPdC9KNGhHWFZ6UDM5c0VtUUVzRnRRSGFqckY2WWN2L1l0NTVjaExMcGY0ZDl2QVJGaFB1NGMrZlU0dG4yRzBlaGVXdHkxdytqRmRuRkIrYmYzcHloc1U9"
+        "Authorization": access_token
     }
 
     json_str = json.dumps(data)
