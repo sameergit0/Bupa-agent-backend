@@ -123,6 +123,7 @@ async def handle_ai_chat_success(sid, payload):
     }
 
     # reply to this socket
+    print("End time", datetime.now())
     await sio.emit("ai_chat_response", out, to=sid)
 
     # also broadcast to the room (if using rooms)

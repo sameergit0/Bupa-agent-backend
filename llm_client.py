@@ -46,6 +46,7 @@
 #         else:
 #             return "Try Again!"
 
+from datetime import datetime
 import logging
 import time
 import random
@@ -191,6 +192,7 @@ class LLMChatSession:
                 final_text = self._safe_text_from_content(content)
                 print(f"[final] {final_text}")
                 self.contents.append(content)
+                print("Start time", datetime.now())
                 return final_text
 
             print("[loop] reached MAX_TOOL_STEPS")
