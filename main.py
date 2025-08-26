@@ -16,7 +16,7 @@ from tool_funcs import TOOL_MAP
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 logger = logging.getLogger("socketio_server")
 
-HOST = "127.0.0.1"
+HOST = "0.0.0.0"
 PORT = 5000
 
 sio = socketio.AsyncServer(
