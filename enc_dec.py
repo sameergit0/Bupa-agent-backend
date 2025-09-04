@@ -55,6 +55,7 @@ def make_request(endpoint_name: str, data, access_token: str) -> dict[str, objec
     }
 
     json_str = json.dumps(data)
+    print(json_str)
     encrypted = encrypt_response(json_str)
     encoded = quote(encrypted, safe='')
 

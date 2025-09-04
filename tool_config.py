@@ -32,7 +32,7 @@ disenroll_member_declaration = {
         "properties": {
             "reason": {
                 "type": "string",
-                "description": "TThe specific reason for disenrollment.",
+                "description": "The specific reason for disenrollment.",
             },
             "disEnrollmentNote": {
                 "type": "string",
@@ -45,7 +45,7 @@ disenroll_member_declaration = {
 
 add_health_metric_declaration = {
     "name": "add_health_metric",
-    "description": "Records a specific health metric and its value for the current logged-in member on a given date.",
+    "description": "Records a specific health metric value for the current logged-in member.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -83,7 +83,7 @@ fetch_services_by_category_declaration = {
 
 add_new_service_declaration = {
     "name": "add_new_service",
-    "description": "Schedules a new service for the currently logged-in member under a specific category on a given date and time.",
+    "description": "Schedules a new service for the currently logged-in member under a specific category.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -93,7 +93,7 @@ add_new_service_declaration = {
             },
             "serviceName": {
                 "type": "string",
-                "description": "The specific name of the service to be scheduled"
+                "description": "The specific name of the service to be scheduled."
             },
             "date": {
                 "type": "string",
@@ -321,7 +321,7 @@ cancel_or_reschedule_call_declaration = {
             },
             "reasonForCancellation": {
                 "type": "string",
-                "description": "A detailed note explaining the reason for canceling the call. Required if the action is 'cancel'."
+                "description": "A free-form detailed note explaining the reason for canceling the call. Required if the action is 'cancel'."
             },
             "streamName": {
                 "type": "string",
@@ -613,7 +613,7 @@ schedule_call_with_cn_declaration = {
 
 fetch_member_profile_details_declaration = {
     "name": "member_profile_details",
-    "description": "Fetches a comprehensive profile of the currently logged-in member. This includes personal information (e.g. name, age, city, mobile number), membership and contract details, health metrics (BMI, HRA score), and all currently assigned programs, conditions, and their pathway statuses.",
+    "description": "Fetches a comprehensive profile of the currently logged-in member. This includes personal information (e.g. name, age, city, mobile number), membership and contract details, health metrics (BMI, HBA1C), a list of all assigned programs, their conditions, and pathway statuses, and information about family members on the same policy.",
     "parameters": {
         "type": "object",
         "properties": {},
@@ -658,7 +658,7 @@ fetch_member_journey_declaration = {
 
 add_member_record_declaration = {
     "name": "add_member_record",
-    "description": "Adds a new record to the currently logged-in member's profile.",
+    "description": "Adds a new record to the health locker for the currently logged-in member.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -677,7 +677,7 @@ add_member_record_declaration = {
 
 fetch_health_locker_files_declaration = {
     "name": "health_locker_files",
-    "description": "FFetches a list of files and documents from the currently logged-in member's health locker for a specified report category.",
+    "description": "Fetches a list of files and documents from the currently logged-in member's health locker for a specified report category.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -700,12 +700,12 @@ view_specific_record_declaration = {
                 "type": "string",
                 "description": "The category of the health record to be viewed."
             },
-            "fileName": {
-                "type": "string",
-                "description": "The exact name of the file to view."
+            "fileId": {
+                "type": "integer",
+                "description": "The exact ID of the file to view."
             }
         },
-        "required": ["reportType", "fileName"]
+        "required": ["reportType", "fileId"]
     }
 }
 
@@ -719,12 +719,12 @@ remove_specific_record_declaration = {
                 "type": "string",
                 "description": "The category of the health record from which the file will be removed."
             },
-            "fileName": {
-                "type": "string",
-                "description": "The exact name of the file to be deleted."
+            "fileId": {
+                "type": "integer",
+                "description": "The exact ID of the file to be deleted."
             }
         },
-        "required": ["reportType", "fileName"]
+        "required": ["reportType", "fileId"]
     }
 }
 
@@ -928,7 +928,7 @@ fetch_calender_calls_declaration = {
 
 add_bmi_declaration = {
     "name": "add_bmi",
-    "description": "Calculates and records the Body Mass Index (BMI) for the currently logged-in member using their height and weight.",
+    "description": "Calculates and records the Body Mass Index (BMI) for the currently logged-in member.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -949,6 +949,490 @@ add_bmi_declaration = {
     }
 }
 
+fetch_member_call_history_declaration = {
+    "name": "member_call_history",
+    "description": "Fetch call history of currently logged-in member under the navigator.",
+    "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+    }
+}
+
+# {
+#     "userId": "ZFRueXR1Smk0ZVlOcFRwSFlYMlZwUT09",
+#     "formData": {
+#         "userId": "ZFRueXR1Smk0ZVlOcFRwSFlYMlZwUT09",
+#         "fullName": "Hakeem IP",
+#         "email": "member@example.com",
+#         "city": "Riyadh",
+#         "nationality": "KSA",
+#         "dob": "03/15/1990",
+#         "referral": "",
+#         "membershipNumber": "12345923",
+#         "gender": "Male",
+#         "mobile1": "0121254545",
+#         "mobile2": "",
+#         "smoker": "Y",
+#         "obese": "Y",
+#         "playSport": "Y",
+#         "tbd": "Y",
+#         "medicalHistory": {
+#             "activeComplaints": "active complaints",
+#             "pastHistory": "past history",
+#             "previousTreatments": "Y",
+#             "previousTreatmentsDetails": "Previous hospitalizations",
+#             "allergyHistory": "Y",
+#             "allergyHistoryDetails": "Allergy",
+#             "mentalHealthAssessment": "Mental Health"
+#         },
+#         "medications": [
+#             {
+#                 "code": "",
+#                 "categoryId": "0",
+#                 "categoryName": "",
+#                 "drugId": "0",
+#                 "drugName": "",
+#                 "frequency": "",
+#                 "duration": "",
+#                 "supplyFrom": "",
+#                 "supplyTo": "",
+#                 "medicalHistory": ""
+#             }
+#         ],
+#         "newMedications": "Y",
+#         "newMedicationsDetails": "Recent changes",
+#         "patientAdherence": {
+#             "compliancePrescribedMedicines": "Y",
+#             "followLifestyleChanges": "Y",
+#             "attendanceAtAppointments": "Y",
+#             "understaningOfTretmentPlan": "Y",
+#             "goalForManagingCondition": "Y"
+#         },
+#         "obGynHistory": {
+#             "currentPregnancy": "",
+#             "lastMenses": ""
+#         },
+#         "familyMedicalHistory": "Family Medical",
+#         "previousScreenings": {
+#             "mammography": "Y",
+#             "mammographyDate": "2025-09-02",
+#             "papsmear": "Y",
+#             "papsmearDate": "2025-09-02",
+#             "boneDensityTests": "Y",
+#             "boneDensityTestsDate": "2025-09-02",
+#             "psa": "Y",
+#             "psaDate": "2025-09-02",
+#             "previousFIT": "Y",
+#             "previousFITDate": "2025-09-02",
+#             "colonoscopy": "Y",
+#             "colonoscopyDate": "2025-09-02",
+#             "other": "Other "
+#         },
+#         "labResults": [
+#             {
+#                 "categoryId": "10",
+#                 "categoryName": "Glucose Test",
+#                 "code": "GTT",
+#                 "assessmentServiceId": "12",
+#                 "assessmentServiceName": "Glucose tolerance test",
+#                 "patientCondition": "Lab condition",
+#                 "date": "2025-09-12",
+#                 "attachmentUrl": "Attachment ",
+#                 "provider": "Provider\t",
+#                 "notes": "Lab  Remarks"
+#             }
+#         ],
+#         "imagingResults": [
+#             {
+#                 "categoryId": "13",
+#                 "categoryName": "MRI",
+#                 "code": "AM",
+#                 "assessmentServiceId": "16",
+#                 "assessmentServiceName": "Abdominal MRI",
+#                 "patientCondition": "Imaging condition",
+#                 "date": "2025-09-24",
+#                 "attachmentUrl": "Attachment",
+#                 "provider": "Provider",
+#                 "notes": "Remarks"
+#             }
+#         ]
+#     },
+#     "version": "1.1"
+# }
+
+# add_health_assessment_declaration = {
+#     "name": "add_health_assessment",
+#     "description": "Submits health assessment form history form for the member.",
+#     "parameters": {
+#         "type": "object",
+#         "properties": {
+#             "smoker": {
+#                 "type": "string",
+#                 "description": "Indicates if the member is a smoker ('Y' for Yes and 'N' for No).",
+#                 "enum": ["Y", "N"]
+#             },
+#             "obese": {
+#                 "type": "string",
+#                 "description": "Indicates if the member is obese ('Y' for Yes and 'N' for No).",
+#                 "enum": ["Y", "N"]
+#             },
+#             "playSport": {
+#                 "type": "string",
+#                 "description": "Indicates if the member plays sports ('Y' for Yes and 'N' for No).",
+#                 "enum": ["Y", "N"]
+#             },
+#             "tbd": {
+#                 "type": "string",
+#                 "description": "A placeholder for 'to be determined' health status ('Y' for Yes and 'N' for No).",
+#                 "enum": ["Y", "N"]
+#             },
+#             "medicalHistory": {
+#                 "type": "object",
+#                 "description": "Details about the member's medical history.",
+#                 "properties": {
+#                     "activeComplaints": {
+#                         "type": "string",
+#                         "description": "Current active health complaints."
+#                     },
+#                     "pastHistory": {
+#                         "type": "string",
+#                         "description": "Details of the member's past medical history."
+#                     },
+#                     "previousTreatments": {
+#                         "type": "string",
+#                         "description": "Indicates if there have been previous hospitalizations, surgeries, or treatments related to the chronic condition ('Y' for Yes and 'N' for No).",
+#                         "enum": ["Y", "N"]
+#                     },
+#                     "previousTreatmentsDetails": {
+#                         "type": "string",
+#                         "description": "Specific details about previous treatments if `previousTreatments` is 'Y'."
+#                     },
+#                     "allergyHistory": {
+#                         "type": "string",
+#                         "description": "Indicates if there is a history of allergies ('Y' for Yes and 'N' for No).",
+#                         "enum": ["Y", "N"]
+#                     },
+#                     "allergyHistoryDetails": {
+#                         "type": "string",
+#                         "description": "Specific details about the patient's allergies if `allergyHistory` is 'Y'."
+#                     },
+#                     "mentalHealthAssessment": {
+#                         "type": "string",
+#                         "description": "Details of the patient's mental health assessment."
+#                     }
+#                 },
+#                 "required": []
+#             },
+#             "medications": {
+#                 "type": "array",
+#                 "description": "A list of current medications the patient is taking.",
+#                 "items": {
+#                     "type": "object",
+#                     "properties": {
+#                         "categoryName": {
+#                             "type": "string",
+#                             "description": "The name of the medication category."
+#                         },
+#                         "drugName": {
+#                             "type": "string",
+#                             "description": "The name of the drug."
+#                         },
+#                         "frequency": {
+#                             "type": "string",
+#                             "description": "How often the medication is taken."
+#                         },
+#                         "duration": {
+#                             "type": "string",
+#                             "description": "The duration for which the medication is to be taken."
+#                         },
+#                         "supplyFrom": {
+#                             "type": "string",
+#                             "description": "The start date of the medication supply."
+#                         },
+#                         "supplyTo": {
+#                             "type": "string",
+#                             "description": "The end date of the medication supply."
+#                         },
+#                         "medicalHistory": {
+#                             "type": "string",
+#                             "description": "A brief history related to this medication."
+#                         }
+#                     }
+#                 },
+#                 "required": []
+#             },
+#             "newMedications": {
+#                 "type": "string",
+#                 "description": "Indicates if there are recent changes to medications ('Y' for Yes and 'N' for No).",
+#                 "enum": ["Y", "N"]
+#             },
+#             "newMedicationsDetails": {
+#                 "type": "string",
+#                 "description": "Details about recent medication changes if `newMedications` is 'Y'."
+#             },
+#             "patientAdherence": {
+#                 "type": "object",
+#                 "description": "An assessment of the patient's adherence to their treatment plan.",
+#                 "properties": {
+#                     "compliancePrescribedMedicines": {
+#                         "type": "string",
+#                         "description": "Indicates compliance with prescribed medicines ('Y' for Yes and 'N' for No).",
+#                         "enum": ["Y", "N"]
+#                     },
+#                     "followLifestyleChanges": {
+#                         "type": "string",
+#                         "description": "Indicates if the patient follows lifestyle changes ('Y' for Yes and 'N' for No).",
+#                         "enum": ["Y", "N"]
+#                     },
+#                     "attendanceAtAppointments": {
+#                         "type": "string",
+#                         "description": "Indicates if the patient attends appointments ('Y' for Yes and 'N' for No).",
+#                         "enum": ["Y", "N"]
+#                     },
+#                     "understaningOfTretmentPlan": {
+#                         "type": "string",
+#                         "description": "Indicates the patient's understanding of the treatment plan ('Y' for Yes and 'N' for No).",
+#                         "enum": ["Y", "N"]
+#                     },
+#                     "goalForManagingCondition": {
+#                         "type": "string",
+#                         "description": "Indicates if the patient has a goal for managing their condition ('Y' for Yes and 'N' for No).",
+#                         "enum": ["Y", "N"]
+#                     }
+#                 },
+#                 "required": []
+#             },
+#             "familyMedicalHistory": {
+#                 "type": "string",
+#                 "description": "Details about the family's medical history."
+#             },
+#             "previousScreenings": {
+#                 "type": "object",
+#                 "description": "A record of previous health screenings.",
+#                 "properties": {
+#                     "mammography": {
+#                         "type": "string",
+#                         "description": "Indicates if a mammography was performed ('Y' for Yes and 'N' for No).",
+#                         "enum": ["Y", "N"]
+#                     },
+#                     "mammographyDate": {
+#                         "type": "string",
+#                         "description": "The date of the mammography in `YYYY-MM-DD` format if `mammography` is 'Y'."
+#                     },
+#                     "papsmear": {
+#                         "type": "string",
+#                         "description": "Indicates if a pap smear was performed ('Y' for Yes and 'N' for No).",
+#                         "enum": ["Y", "N"]
+#                     },
+#                     "papsmearDate": {
+#                         "type": "string",
+#                         "description": "The date of the pap smear in `YYYY-MM-DD` format if `papsmear` is 'Y'."
+#                     },
+#                     "boneDensityTests": {
+#                         "type": "string",
+#                         "description": "Indicates if bone density tests were performed ('Y' for Yes and 'N' for No).",
+#                         "enum": ["Y", "N"]
+#                     },
+#                     "boneDensityTestsDate": {
+#                         "type": "string",
+#                         "description": "The date of the bone density tests in `YYYY-MM-DD` format if `boneDensityTests` is 'Y'."
+#                     },
+#                     "psa": {
+#                         "type": "string",
+#                         "description": "Indicates if a PSA test was performed ('Y' for Yes and 'N' for No).",
+#                         "enum": ["Y", "N"]
+#                     },
+#                     "psaDate": {
+#                         "type": "string",
+#                         "description": "The date of the PSA test in `YYYY-MM-DD` format if `psa` is 'Y'."
+#                     },
+#                     "previousFIT": {
+#                         "type": "string",
+#                         "description": "Indicates if a previous FIT (Fecal Immunochemical Test) was performed ('Y' for Yes and 'N' for No).",
+#                         "enum": ["Y", "N"]
+#                     },
+#                     "previousFITDate": {
+#                         "type": "string",
+#                         "description": "The date of the previous FIT in `YYYY-MM-DD` format if `previousFIT` is 'Y'."
+#                     },
+#                     "colonoscopy": {
+#                         "type": "string",
+#                         "description": "Indicates if a colonoscopy was performed ('Y' for Yes and 'N' for No).",
+#                         "enum": ["Y", "N"]
+#                     },
+#                     "colonoscopyDate": {
+#                         "type": "string",
+#                         "description": "The date of the colonoscopy in `YYYY-MM-DD` format if `colonoscopy` is 'Y'."
+#                     },
+#                     "other": {
+#                         "type": "string",
+#                         "description": "Details of other previous screenings."
+#                     }
+#                 },
+#                 "required": []
+#             },
+#             "labResults": {
+#                 "type": "array",
+#                 "description": "A list of the patient's lab test results.",
+#                 "items": {
+#                     "type": "object",
+#                     "properties": {
+#                         "categoryName": {
+#                             "type": "string",
+#                             "description": "The name of the lab test category."
+#                         },
+#                         "assessmentServiceName": {
+#                             "type": "string",
+#                             "description": "The name of the assessment service."
+#                         },
+#                         "patientCondition": {
+#                             "type": "string",
+#                             "description": "The patient's condition related to the test."
+#                         },
+#                         "date": {
+#                             "type": "string",
+#                             "description": "The date the lab test was performed in `YYYY-MM-DD` format."
+#                         },
+#                         "attachmentUrl": {
+#                             "type": "string",
+#                             "description": "A URL to the lab test result attachment."
+#                         },
+#                         "provider": {
+#                             "type": "string",
+#                             "description": "The provider of the lab test."
+#                         },
+#                         "notes": {
+#                             "type": "string",
+#                             "description": "Additional notes about the lab results."
+#                         }
+#                     }
+#                 },
+#                 "required": []
+#             },
+#             "imagingResults": {
+#                 "type": "array",
+#                 "description": "A list of the patient's imaging test results.",
+#                 "items": {
+#                     "type": "object",
+#                     "properties": {
+#                         "categoryName": {
+#                             "type": "string",
+#                             "description": "The name of the imaging test category."
+#                         },
+#                         "assessmentServiceName": {
+#                             "type": "string",
+#                             "description": "The name of the assessment service."
+#                         },
+#                         "patientCondition": {
+#                             "type": "string",
+#                             "description": "The patient's condition related to the imaging test."
+#                         },
+#                         "date": {
+#                             "type": "string",
+#                             "description": "The date the imaging test was performed in YYYY-MM-DD format."
+#                         },
+#                         "attachmentUrl": {
+#                             "type": "string",
+#                             "description": "A URL to the imaging result attachment."
+#                         },
+#                         "provider": {
+#                             "type": "string",
+#                             "description": "The provider of the imaging test."
+#                         },
+#                         "notes": {
+#                             "type": "string",
+#                             "description": "Additional notes about the imaging results."
+#                         }
+#                     }
+#                 },
+#                 "required": []
+#             },
+#             "required": []
+#         }
+#     }
+# }
+
+# {
+    # "startDate": "2025-08-28",
+    # "endDate": "2025-09-03",
+    # "searchStr": "",
+    # "searchTaskType": "",
+    # "searchPriority": "",
+    # "searchStatus": "overdue,new,risk",
+    # "searchCarenavigator": "OWh0NSsrOXpEZU5POXEyL21Td2tMZz09",
+    # "searchPrograms": "",
+    # "searchConditions": "",
+    # "searchCompletedBy": "",
+    # "searchContract": "",
+    # "calledFrom": "tasklist",
+    # "page": 1,
+    # "perPage": 10,
+    # "sortColumn": "",
+    # "sortDirection": "asc",
+    # "download": "N"
+# } 
+
+fetch_task_list_declaration = {
+    "name": "get_task_list",
+    "description": "Fetches a list of tasks for the currently logged-in care navigator. The tasks can be filtered by date range, type, priority, status, program, and condition.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "startDate": {
+                "type": "string",
+                "description": "The start date to fetch tasks, in 'YYYY-MM-DD' format."
+            },
+            "endDate": {
+                "type": "string",
+                "description": "The end date to fetch tasks, in 'YYYY-MM-DD' format."
+            },
+            "taskType": {
+                "type": "array",
+                "description": "An array of strings to filter tasks by their type. For example: ['CareNavigator Call', 'WhatsApp Reply'].",
+                "items": {
+                    "type": "string",
+                    # "enum": ["cncall", "labApproval", "labrequest", "medicationrequest", "memberreachout", "reportinterpretation", "servicesfailed", "telehealthconsultation", "whatsappreply"]
+                }
+            },
+            "priority": {
+                "type": "array",
+                "description": "An array of strings to filter tasks by priority. For example: ['high', 'medium'].",
+                "items": {
+                    "type": "string",
+                    "enum": ["critical", "high", "medium", "low"]
+                }
+            },
+            "searchStatus": {
+                "type": "array",
+                "description": "An optional array of strings to filter tasks by status. For example: ['risk', 'expired'].",
+                "items": {
+                    "type": "string",
+                    "enum": ["overdue", "risk", "new", "completed", "dismissed", "expired"]
+                }
+            },
+            "searchPrograms":{
+                "type": "array",
+                "description": "An optional array of strings to filter tasks by program. For example: ['ACM Pro', 'lifestyle changes'].",
+                "items": {
+                    "type": "string",
+                    "enum": ["ACM Pro", "Aramco Preventive", "Cardiac Program", "Care Connect Model", "Care Connect Model For COPD", "lifestyle changes", "Light CCM", "Men Health", "WomenHealth", "World Class Global Expertise"]
+                }
+            },
+            "searchConditions": {
+                "type": "array",
+                "description": "An optional array of strings to filter tasks by condition. For example: ['Dyslipidemia', 'Rheumatoid Arthritis'].",
+                "items": {
+                    "type": "string",
+                    "enum": ["Arrhythmia", "Asthma", "Case Coordination", "COPD", "Diabetes Mellitus", "Diabetes with hypothyroidism", "Diabetic Kidney Disease", "Dyslipidemia", "Healthy Body", "Hypertension", "Hyperthyroidism", "Hypothyroidism", "Laboratory Management", "Medication Management", "Mental Health", "Mental Health Club two", "Physical Health Club One", "Rheumatoid Arthritis", "Systemic Lupus Erythematosus", "Well Controlled", "XXXYY"]
+                }
+            }
+        },
+        "required": ["startDate", "endDate", "taskType", "priority"]
+    }
+} 
+
+
 TOOLS = [
     types.Tool(
         function_declarations=[add_note_declaration, disenroll_member_declaration, add_health_metric_declaration, fetch_services_by_category_declaration, add_new_service_declaration,
@@ -962,6 +1446,7 @@ TOOLS = [
                                remove_specific_record_declaration, fetch_all_members_scheduled_calls_under_cn_declaration, fetch_todays_tasks_declaration,
                                fetch_weekly_summary_declaration, fetch_members_stratification_declaration, fetch_pathway_breakup_declaration, fetch_new_report_members_declaration,
                                fetch_requested_services_declaration, fetch_working_plans_and_breaks_declaration, add_break_declaration, delete_break_declaration,
-                               search_view_member_under_cn_declaration, fetch_calender_calls_declaration, add_bmi_declaration]
+                               search_view_member_under_cn_declaration, fetch_calender_calls_declaration, add_bmi_declaration, fetch_member_call_history_declaration,
+                               fetch_task_list_declaration]
     )
 ]

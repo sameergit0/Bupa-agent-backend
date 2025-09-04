@@ -48,6 +48,8 @@ class DynamicConstants:
             "Telehealth Services": "ths"
         }
         self.break_reason_names = []
+        self.task_type_names = []
+        self.task_type_lookup = {}
 
     def load(self):
         self.user_profile = self.fetch_user_profile_details()
@@ -64,7 +66,8 @@ class DynamicConstants:
                 executor.submit(self.fetch_home_base_details): "home_base_details",
                 executor.submit(self.fetch_report_types): "report_types",
                 executor.submit(self.fetch_conditions): "conditions",
-                executor.submit(self.fetch_break_reasons): "break_reasons"
+                executor.submit(self.fetch_break_reasons): "break_reasons",
+                executor.submit(self.fetch_task_types): "task_types"
             }
 
             results = {}
@@ -130,6 +133,10 @@ class DynamicConstants:
 
         break_reasons = results.get("break_reasons", {})
         self.break_reason_names = [item.get('reason') for item in break_reasons.get('data', {}).get('reasons', []) if item.get('reason')]
+
+        task_types = results.get("task_types", {})
+        self.task_type_names = [item.get('taskDescription') for item in task_types.get('data', {}).get('taskTypes', []) if item.get('taskDescription')]
+        self.task_type_lookup = {item.get('taskDescription'): item.get('taskType') for item in task_types.get('data', {}).get('taskTypes', []) if item.get('taskDescription') and item.get('taskType')}
 
     def select_file(self):
         root = tk.Tk()
@@ -250,6 +257,14 @@ class DynamicConstants:
         """Fetches break reason to add break"""
 
         endpoint_name = "/fetch_break_reasons"
+        data = {}
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
+        return output
+    
+    def fetch_task_types(self):
+        """Fetches task types"""
+
+        endpoint_name = "/fetch_task_types"
         data = {}
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output

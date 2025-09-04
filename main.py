@@ -93,7 +93,7 @@ async def handle_ai_chat_success(sid, payload):
         "timestamp": client_ts,
     }
     print("--------------------------------------------")
-    print(meta)
+    print(f"client's message: {message}")
     print("--------------------------------------------")
 
     logger.info(f"[ai_chat_success] sid={sid} sessionId={session_id} userId={user_id} message={message!r}")
@@ -123,6 +123,9 @@ async def handle_ai_chat_success(sid, payload):
     }
 
     # reply to this socket
+    print("--------------------------------------------")
+    print(f"model's response: {reply_text}")
+    print("--------------------------------------------")
     print("End time", datetime.now())
     await sio.emit("ai_chat_response", out, to=sid)
 

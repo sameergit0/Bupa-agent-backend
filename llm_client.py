@@ -192,6 +192,9 @@ class LLMChatSession:
                 final_text = self._safe_text_from_content(content)
                 print(f"[final] {final_text}")
                 self.contents.append(content)
+                print("--------------------------------------------")
+                print(f"model's response: {final_text}")
+                print("--------------------------------------------")
                 print("Start time", datetime.now())
                 return final_text
 
