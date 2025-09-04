@@ -1,0 +1,7 @@
+google-genai
+python-socketio
+uvicorn
+python-dateutil
+pycryptodome
+python-dotenv
+requests
