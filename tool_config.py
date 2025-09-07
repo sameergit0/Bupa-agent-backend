@@ -505,7 +505,7 @@ home_care_request_declaration = {
             },
             "productName": {
                 "type": "string",
-                "description": "The name of the home care product.",
+                "description": "The user-facing label (name) of the home care product, not its internal value.",
             },
             "district": {
                 "type": "string",
