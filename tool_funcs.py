@@ -267,12 +267,8 @@ def member_upcoming_scheduled_call(dynamic_constants: DynamicConstants):
         endpoint_name = "/fetch_user_specific_calls"
         data = {"userId": dynamic_constants.user_id}
         response = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
-        # print("Response------------------------------------------------------------------------------------------------", response)
         if response.get("code") == 200 and "calls" in response.get("data", {}):
             all_calls = response["data"]["calls"]
-            # print("All Calls------------------------------------------------------------------", all_calls)
-        # if response and response.get("code") == 200 and "calls" in response.get("data", {}):
-        #     all_calls = response["data"]["calls"]
             scheduled_calls = [call for call in all_calls if call.get("status") == "Scheduled"]
             output = {"code": 200, "data": {"calls": scheduled_calls}}
             return output.get("data", {})
@@ -280,8 +276,8 @@ def member_upcoming_scheduled_call(dynamic_constants: DynamicConstants):
             return {"error": "No calls scheduled for member."}
     except Exception as e:
         return {"error": "Sorry, I can't fetch next upcoming call at this moment for the member. Please try again later."}
-    
-def cancel_or_reschedule_call(dynamic_constants: DynamicConstants, action: str, old_slot_date: str, old_slot_time: str, new_slot: str = "", streamName: str = "", reasonForCancellation: str = ""):
+
+def cancel_or_reschedule_call(dynamic_constants: DynamicConstants, action: str, old_slot_date: str, old_slot_time: str, new_slot: str = "", streamNames: list = [], reasonForCancellation: str = ""):
     """Cancel or re-schedule upcoming call for the member"""
 
     try:
@@ -289,17 +285,32 @@ def cancel_or_reschedule_call(dynamic_constants: DynamicConstants, action: str, 
         scheduled_calls_data = member_upcoming_scheduled_call(dynamic_constants)
         all_scheduled_calls = scheduled_calls_data["calls"]
         target_appointment = next((call for call in all_scheduled_calls if call.get("date") == old_slot_date and call.get("time") == old_slot_time), None)
+
         if not target_appointment:
             return {"error": f"No scheduled appointment found for the specified slot {old_slot_date} {old_slot_time}"}
+        
         appointmentId = target_appointment.get("callId")
-        streamValue = dynamic_constants.streams_lookup.get(streamName)
-        streams = [{"label": streamName,"value": streamValue}]
-        data = {"userId": dynamic_constants.user_id, "action": action, "appointmentId": appointmentId, "slot": new_slot if action == "re-schedule" else "", "streams": streams if action == "cancel" else [],
-            "reasonForCancellation": reasonForCancellation if action == "cancel" else ""}
+
+        streams_payload = []
+        if action == "cancel" and streamNames:
+            for streamName in streamNames:
+                streamValue = dynamic_constants.streams_lookup.get(streamName)
+                streams_payload.append({"label": streamName, "value": streamValue})
+
+        data = {
+            "userId": dynamic_constants.user_id,
+            "action": action,
+            "appointmentId": appointmentId,
+            "slot": new_slot if action == "re-schedule" else "",
+            "streams": streams_payload, 
+            "reasonForCancellation": reasonForCancellation if action == "cancel" else ""
+        }
+        
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output
+        
     except Exception as e:
-        return {"error": "Sorry, I can't cancel or reschedule call at this moment for the member. Please try again later."}
+        return {"error": f"Sorry, I can't cancel or reschedule call at this moment for the member. An error occurred: {e}. Please try again later."}
 
 def available_tickets(dynamic_constants: DynamicConstants):
     """Fetches member's available tickets"""
@@ -347,8 +358,8 @@ def lab_providers(dynamic_constants: DynamicConstants, cityName: str):
         return {"error": "Sorry, I couldn't retrieve the lab providers for this city at the moment. Please try again later."}
 
 
-def lab_request(dynamic_constants: DynamicConstants, coPayment: str, preferredAppointmentDateTime: str, cityName: str, partnerClinic: str, requestedLabTest: str, labProviderName: str,
-                deductible: str = "NIL", nationality: str = "Saudi Arabian", district: str = "", remarks: str = "", approvalNumber: int = ""):
+def lab_request(dynamic_constants: DynamicConstants, coPayment: str, preferredAppointmentDateTime: str, cityName: str, partnerClinic: str, requestedLabTest: list, labProviderName: str,
+                deductible: str = "NIL", district: str = "", remarks: str = "", approvalNumber: int = ""):
     """Make Lab request for the member"""
 
     try:
@@ -359,6 +370,9 @@ def lab_request(dynamic_constants: DynamicConstants, coPayment: str, preferredAp
             return {"result": f"No lab providers were found in {cityName}."}
         lab_provider_lookup = {l["labName"]: l["id"] for l in lab_providers_list}
         labProviderId = lab_provider_lookup.get(labProviderName)
+        mapped_lab_types = [dynamic_constants.labtest_lookup.get(test) for test in requestedLabTest]
+        labTests = ",".join(mapped_lab_types)
+
         data = {
             "formData": {
                 "userId": dynamic_constants.user_id,
@@ -370,7 +384,7 @@ def lab_request(dynamic_constants: DynamicConstants, coPayment: str, preferredAp
                 "deductible": deductible if coPayment == 'yes' else "NIL",
                 "selectedDate": preferredAppointmentDateTime,
                 "viewDate": datetime.strptime(preferredAppointmentDateTime, "%Y-%m-%d %H:%M").replace(tzinfo=gettz("Asia/Kolkata")).astimezone(gettz("UTC")).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                "nationality": nationality,
+                "nationality": dynamic_constants.user_profile["data"]["info"]["nationality"],
                 "labProviderName": labProviderName,
                 "labProviderId": labProviderId,
                 "district": district,
@@ -379,8 +393,9 @@ def lab_request(dynamic_constants: DynamicConstants, coPayment: str, preferredAp
                 "city": cityName,
                 "cityId": dynamic_constants.city_lookup.get(cityName),
                 "partnerClinic": dynamic_constants.partner_lookup.get(partnerClinic),
-                "requestedLabTest": requestedLabTest,
-                "selectedUserNames": requestedLabTest,
+                "requestedLabTest": labTests,
+                "selectedUserNames": labTests,
+                "productCount": len(requestedLabTest)
             }
         }
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
@@ -388,13 +403,12 @@ def lab_request(dynamic_constants: DynamicConstants, coPayment: str, preferredAp
     except Exception as e:
         return {"error": "Sorry, I couldn't make the lab request at this time. Please try again later."}
 
-
-def homecare_lab_providers(dynamic_constants: DynamicConstants, cityName: str):
+def homecare_lab_providers(dynamic_constants: DynamicConstants, cityName: str, categoryName: str):
     """Fetches all the home care lab providers available in a given city"""
     
     try:
         endpoint_name = "/fetch_home_care"
-        data = {"cityName": dynamic_constants.city_lookup.get(cityName), "membership": dynamic_constants.user_profile["data"]["info"]["membershipNumber"]}
+        data = {"cityName": dynamic_constants.city_lookup.get(cityName), "categoryName": dynamic_constants.hc_cat_lookup.get(categoryName), "membership": dynamic_constants.user_profile["data"]["info"]["membershipNumber"]}
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output.get("data", {})
     except Exception as e:
@@ -411,16 +425,17 @@ def homecare_health_products(dynamic_constants: DynamicConstants, cityName: str,
     except Exception as e:
         return {"error": "Sorry, I couldn't retrieve the home care health products at the moment. Please try again later."}
 
-def home_care_request(dynamic_constants: DynamicConstants, coPayment: str, preferredAppointmentDateTime: str, cityName: str, categoryName: str, labProviderName: str, productName: str,
-                      nationality: str = "Saudi Arabian", deductible: str = "NIL", district: str = "", remarks: str = "", approvalNumber: int = ""):
-    """make home care request for the member"""
 
-    try:
+def home_care_request(dynamic_constants: DynamicConstants, coPayment: str, preferredAppointmentDateTime: str, cityName: str, categoryName: str, labProviderName: str, productName: str,
+                      deductible: str = "NIL", district: str = "", remarks: str = "", approvalNumber: int = ""):
+    """make home care request for the member"""
+    try:    
+        print("productName---------------------------------------------------------------------------", productName)
         endpoint_name = "/save_home_care_metadoc"   
-        available_hc_lab_providers = homecare_lab_providers(dynamic_constants, cityName=cityName) 
+        available_hc_lab_providers = homecare_lab_providers(dynamic_constants, cityName=cityName, categoryName=categoryName) 
         hc_lab_providers_list = available_hc_lab_providers.get("provider", [])
         if not hc_lab_providers_list:
-            return {"error": f"No home care lab providers found in {cityName}."}
+            return {"error": f"No home care lab providers available for category '{categoryName}' in {cityName}."}
         hc_lab_provider_lookup = {hc["providerName"]: hc["id"] for hc in hc_lab_providers_list}
         homeHealthCareId = hc_lab_provider_lookup.get(labProviderName)
         available_hc_products = homecare_health_products(dynamic_constants, cityName=cityName, categoryName=categoryName)
@@ -440,13 +455,13 @@ def home_care_request(dynamic_constants: DynamicConstants, coPayment: str, prefe
                 "deductible": deductible if coPayment == 'yes' else "NIL",
                 "selectedDate": preferredAppointmentDateTime,
                 "viewDate": datetime.strptime(preferredAppointmentDateTime, "%Y-%m-%d %H:%M").replace(tzinfo=gettz("Asia/Kolkata")).astimezone(gettz("UTC")).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                "nationality": nationality,
+                "nationality": dynamic_constants.user_profile["data"]["info"]["nationality"],
                 "district": district,
                 "remarks": remarks,
                 "city": cityName,
                 "cityId": dynamic_constants.city_lookup.get(cityName),
                 "partnerClinic": "Direct Request",
-                "category": categoryName,
+                "category": dynamic_constants.hc_cat_lookup.get(categoryName),
                 "labProviderName": labProviderName,
                 "homeHealthCare": homeHealthCareId,
                 "product": product
@@ -457,7 +472,7 @@ def home_care_request(dynamic_constants: DynamicConstants, coPayment: str, prefe
     except Exception as e:
         return {"error": "Sorry, I couldn't make the home care request at this time. Please try again later."}
 
-def homebase_vaccine_request(dynamic_constants: DynamicConstants, cityName: str, productName: str, deductible: str, vaccine: str, district: str, nationality: str = "Saudi Arabian", remarks: str = ""):
+def homebase_vaccine_request(dynamic_constants: DynamicConstants, cityName: str, productName: str, deductible: str, vaccine: str, district: str, remarks: str = ""):
     """Adds home base vaccine request for the member"""
 
     try:
@@ -473,7 +488,7 @@ def homebase_vaccine_request(dynamic_constants: DynamicConstants, cityName: str,
             "partnerClinic": "Direct Request",
             "deductible": deductible,
             "vaccine": vaccine,
-            "nationality": nationality,
+            "nationality": dynamic_constants.user_profile["data"]["info"]["nationality"],
             "district": district,
             "remarks": remarks,
             "requestedHomeHealth": dynamic_constants.hb_product_lookup.get(productName),
@@ -951,5 +966,3 @@ TOOL_MAP = {
     "member_call_history": member_call_history,
     "get_task_list": get_task_list
 }
-
-

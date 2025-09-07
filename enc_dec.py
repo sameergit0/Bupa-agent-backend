@@ -47,7 +47,7 @@ def make_request(endpoint_name: str, data, access_token: str) -> dict[str, objec
     """
     make request to get actual response for all the tools
     """
-    # BASE_URL = "https://apiv6.goqii.com/carenavigator"
+    # BASE_URL1 = "https://apiv6.goqii.com/carenavigator"
     url = BASE_URL + endpoint_name
     headers = {
         "Content-Type": "application/json",

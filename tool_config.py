@@ -298,7 +298,7 @@ fetch_member_upcoming_scheduled_call_declaration = {
 
 cancel_or_reschedule_call_declaration = {
     "name": "cancel_or_reschedule_call",
-    "description": "Modifies the next upcoming scheduled call for the logged-in member.",
+    "description": "Modifies the next upcoming scheduled call for the logged-in member. `streamName` and `reasonForCancellation` both are different from each other ask for both.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -323,9 +323,12 @@ cancel_or_reschedule_call_declaration = {
                 "type": "string",
                 "description": "A free-form detailed note explaining the reason for canceling the call. Required if the action is 'cancel'."
             },
-            "streamName": {
-                "type": "string",
-                "description": "A list of streams related to the call. Required if the action is 'cancel'."
+            "streamNames": {
+                "type": "array",
+                "description": "An array of strings for streams related to cancel the call. For example: ['Condition not covered', 'Member Deceased']. Required if the action is 'cancel'.",
+                "items": {
+                    "type": "string"
+                }
             }
         },
         "required": ["action", "old_slot_date", "old_slot_time"]
@@ -404,18 +407,15 @@ lab_request_declaration = {
                 "description": "The name of the partner clinic where the lab test will be performed.",
             },
             "requestedLabTest": {
-                "type": "string",
-                "description": "The name of the specific lab test being requested",
+                "type": "array",
+                "description": "An array of strings, each representing a lab test name. For example: ['151__HBA1c', '150__CBC'].",
+                "items": {
+                    "type": "string"
+                }
             },
             "labProviderName": {
                 "type": "string",
                 "description": "The name of the lab provider.",
-            },
-            "nationality": {
-                "type": "string",
-                "description": "The member's nationality.",
-                "enum": ["Saudi Arabian", "Non Saudi Arabian"],
-                "default": "Saudi Arabian"
             },
             "district": {
                 "type": "string",
@@ -430,22 +430,26 @@ lab_request_declaration = {
                 "description": "An optional approval number for the request."
             }
         },
-        "required": ["coPayment", "preferredAppointmentDateTime", "deductible", "cityName", "partnerClinic", "requestedLabTest", "labProviderName"],
+        "required": ["coPayment", "preferredAppointmentDateTime", "cityName", "partnerClinic", "requestedLabTest", "labProviderName"],
     }
 }
 
 fetch_homecare_lab_providers_declaration = {
     "name": "homecare_lab_providers",
-    "description": "Retrieves a list of all available laboratory providers that offer home care services in a specific city.",
+    "description": "Retrieves a list of all available laboratory providers that offer home care services for a specific category in a given city.",
     "parameters": {
         "type": "object",
         "properties": {
             "cityName": {
                 "type": "string",
                 "description": "The name of the city where the home care lab providers are needed.",
+            },
+            "categoryName": {
+                "type": "string",
+                "description": "The name of the product category to search within.",
             }
         },
-        "required": ["cityName"]
+        "required": ["cityName", "categoryName"]
     }
 }
 
@@ -503,12 +507,6 @@ home_care_request_declaration = {
                 "type": "string",
                 "description": "The name of the home care product.",
             },
-            "nationality": {
-                "type": "string",
-                "description": "The member's nationality.",
-                "enum": ["Saudi Arabian", "Non Saudi Arabian"],
-                "default": "Saudi Arabian"
-            },
             "district": {
                 "type": "string",
                 "description": "The optional district of the member."
@@ -520,10 +518,10 @@ home_care_request_declaration = {
             "approvalNumber": {
                 "type": "string",
                 "description": "An optional approval number for the request.",
-            },
+            }
         },
         "required": ["coPayment", "preferredAppointmentDateTime", "cityName", "categoryName", "labProviderName", "productName"],
-    },
+    }
 }
 
 homebase_vaccine_request_declaration = {
@@ -551,12 +549,6 @@ homebase_vaccine_request_declaration = {
             "district": {
                 "type": "string",
                 "description": "The district within the city where the member is located."
-            },
-            "nationality": {
-                "type": "string",
-                "description": "The member's nationality.",
-                "enum": ["Saudi Arabian", "Non Saudi Arabian"],
-                "default": "Saudi Arabian"
             },
             "remarks": {
                 "type": "string",
@@ -730,7 +722,7 @@ remove_specific_record_declaration = {
 
 fetch_all_members_scheduled_calls_under_cn_declaration = {
     "name": "get_all_care_navigator_scheduled_calls",
-    "description": "Retrieves all scheduled calls for all members under a care navigator within a specified date range.",
+    "description": "Retrieves all upcoming scheduled calls for all members under a care navigator within a specified date range.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -958,400 +950,6 @@ fetch_member_call_history_declaration = {
         "required": []
     }
 }
-
-# {
-#     "userId": "ZFRueXR1Smk0ZVlOcFRwSFlYMlZwUT09",
-#     "formData": {
-#         "userId": "ZFRueXR1Smk0ZVlOcFRwSFlYMlZwUT09",
-#         "fullName": "Hakeem IP",
-#         "email": "member@example.com",
-#         "city": "Riyadh",
-#         "nationality": "KSA",
-#         "dob": "03/15/1990",
-#         "referral": "",
-#         "membershipNumber": "12345923",
-#         "gender": "Male",
-#         "mobile1": "0121254545",
-#         "mobile2": "",
-#         "smoker": "Y",
-#         "obese": "Y",
-#         "playSport": "Y",
-#         "tbd": "Y",
-#         "medicalHistory": {
-#             "activeComplaints": "active complaints",
-#             "pastHistory": "past history",
-#             "previousTreatments": "Y",
-#             "previousTreatmentsDetails": "Previous hospitalizations",
-#             "allergyHistory": "Y",
-#             "allergyHistoryDetails": "Allergy",
-#             "mentalHealthAssessment": "Mental Health"
-#         },
-#         "medications": [
-#             {
-#                 "code": "",
-#                 "categoryId": "0",
-#                 "categoryName": "",
-#                 "drugId": "0",
-#                 "drugName": "",
-#                 "frequency": "",
-#                 "duration": "",
-#                 "supplyFrom": "",
-#                 "supplyTo": "",
-#                 "medicalHistory": ""
-#             }
-#         ],
-#         "newMedications": "Y",
-#         "newMedicationsDetails": "Recent changes",
-#         "patientAdherence": {
-#             "compliancePrescribedMedicines": "Y",
-#             "followLifestyleChanges": "Y",
-#             "attendanceAtAppointments": "Y",
-#             "understaningOfTretmentPlan": "Y",
-#             "goalForManagingCondition": "Y"
-#         },
-#         "obGynHistory": {
-#             "currentPregnancy": "",
-#             "lastMenses": ""
-#         },
-#         "familyMedicalHistory": "Family Medical",
-#         "previousScreenings": {
-#             "mammography": "Y",
-#             "mammographyDate": "2025-09-02",
-#             "papsmear": "Y",
-#             "papsmearDate": "2025-09-02",
-#             "boneDensityTests": "Y",
-#             "boneDensityTestsDate": "2025-09-02",
-#             "psa": "Y",
-#             "psaDate": "2025-09-02",
-#             "previousFIT": "Y",
-#             "previousFITDate": "2025-09-02",
-#             "colonoscopy": "Y",
-#             "colonoscopyDate": "2025-09-02",
-#             "other": "Other "
-#         },
-#         "labResults": [
-#             {
-#                 "categoryId": "10",
-#                 "categoryName": "Glucose Test",
-#                 "code": "GTT",
-#                 "assessmentServiceId": "12",
-#                 "assessmentServiceName": "Glucose tolerance test",
-#                 "patientCondition": "Lab condition",
-#                 "date": "2025-09-12",
-#                 "attachmentUrl": "Attachment ",
-#                 "provider": "Provider\t",
-#                 "notes": "Lab  Remarks"
-#             }
-#         ],
-#         "imagingResults": [
-#             {
-#                 "categoryId": "13",
-#                 "categoryName": "MRI",
-#                 "code": "AM",
-#                 "assessmentServiceId": "16",
-#                 "assessmentServiceName": "Abdominal MRI",
-#                 "patientCondition": "Imaging condition",
-#                 "date": "2025-09-24",
-#                 "attachmentUrl": "Attachment",
-#                 "provider": "Provider",
-#                 "notes": "Remarks"
-#             }
-#         ]
-#     },
-#     "version": "1.1"
-# }
-
-# add_health_assessment_declaration = {
-#     "name": "add_health_assessment",
-#     "description": "Submits health assessment form history form for the member.",
-#     "parameters": {
-#         "type": "object",
-#         "properties": {
-#             "smoker": {
-#                 "type": "string",
-#                 "description": "Indicates if the member is a smoker ('Y' for Yes and 'N' for No).",
-#                 "enum": ["Y", "N"]
-#             },
-#             "obese": {
-#                 "type": "string",
-#                 "description": "Indicates if the member is obese ('Y' for Yes and 'N' for No).",
-#                 "enum": ["Y", "N"]
-#             },
-#             "playSport": {
-#                 "type": "string",
-#                 "description": "Indicates if the member plays sports ('Y' for Yes and 'N' for No).",
-#                 "enum": ["Y", "N"]
-#             },
-#             "tbd": {
-#                 "type": "string",
-#                 "description": "A placeholder for 'to be determined' health status ('Y' for Yes and 'N' for No).",
-#                 "enum": ["Y", "N"]
-#             },
-#             "medicalHistory": {
-#                 "type": "object",
-#                 "description": "Details about the member's medical history.",
-#                 "properties": {
-#                     "activeComplaints": {
-#                         "type": "string",
-#                         "description": "Current active health complaints."
-#                     },
-#                     "pastHistory": {
-#                         "type": "string",
-#                         "description": "Details of the member's past medical history."
-#                     },
-#                     "previousTreatments": {
-#                         "type": "string",
-#                         "description": "Indicates if there have been previous hospitalizations, surgeries, or treatments related to the chronic condition ('Y' for Yes and 'N' for No).",
-#                         "enum": ["Y", "N"]
-#                     },
-#                     "previousTreatmentsDetails": {
-#                         "type": "string",
-#                         "description": "Specific details about previous treatments if `previousTreatments` is 'Y'."
-#                     },
-#                     "allergyHistory": {
-#                         "type": "string",
-#                         "description": "Indicates if there is a history of allergies ('Y' for Yes and 'N' for No).",
-#                         "enum": ["Y", "N"]
-#                     },
-#                     "allergyHistoryDetails": {
-#                         "type": "string",
-#                         "description": "Specific details about the patient's allergies if `allergyHistory` is 'Y'."
-#                     },
-#                     "mentalHealthAssessment": {
-#                         "type": "string",
-#                         "description": "Details of the patient's mental health assessment."
-#                     }
-#                 },
-#                 "required": []
-#             },
-#             "medications": {
-#                 "type": "array",
-#                 "description": "A list of current medications the patient is taking.",
-#                 "items": {
-#                     "type": "object",
-#                     "properties": {
-#                         "categoryName": {
-#                             "type": "string",
-#                             "description": "The name of the medication category."
-#                         },
-#                         "drugName": {
-#                             "type": "string",
-#                             "description": "The name of the drug."
-#                         },
-#                         "frequency": {
-#                             "type": "string",
-#                             "description": "How often the medication is taken."
-#                         },
-#                         "duration": {
-#                             "type": "string",
-#                             "description": "The duration for which the medication is to be taken."
-#                         },
-#                         "supplyFrom": {
-#                             "type": "string",
-#                             "description": "The start date of the medication supply."
-#                         },
-#                         "supplyTo": {
-#                             "type": "string",
-#                             "description": "The end date of the medication supply."
-#                         },
-#                         "medicalHistory": {
-#                             "type": "string",
-#                             "description": "A brief history related to this medication."
-#                         }
-#                     }
-#                 },
-#                 "required": []
-#             },
-#             "newMedications": {
-#                 "type": "string",
-#                 "description": "Indicates if there are recent changes to medications ('Y' for Yes and 'N' for No).",
-#                 "enum": ["Y", "N"]
-#             },
-#             "newMedicationsDetails": {
-#                 "type": "string",
-#                 "description": "Details about recent medication changes if `newMedications` is 'Y'."
-#             },
-#             "patientAdherence": {
-#                 "type": "object",
-#                 "description": "An assessment of the patient's adherence to their treatment plan.",
-#                 "properties": {
-#                     "compliancePrescribedMedicines": {
-#                         "type": "string",
-#                         "description": "Indicates compliance with prescribed medicines ('Y' for Yes and 'N' for No).",
-#                         "enum": ["Y", "N"]
-#                     },
-#                     "followLifestyleChanges": {
-#                         "type": "string",
-#                         "description": "Indicates if the patient follows lifestyle changes ('Y' for Yes and 'N' for No).",
-#                         "enum": ["Y", "N"]
-#                     },
-#                     "attendanceAtAppointments": {
-#                         "type": "string",
-#                         "description": "Indicates if the patient attends appointments ('Y' for Yes and 'N' for No).",
-#                         "enum": ["Y", "N"]
-#                     },
-#                     "understaningOfTretmentPlan": {
-#                         "type": "string",
-#                         "description": "Indicates the patient's understanding of the treatment plan ('Y' for Yes and 'N' for No).",
-#                         "enum": ["Y", "N"]
-#                     },
-#                     "goalForManagingCondition": {
-#                         "type": "string",
-#                         "description": "Indicates if the patient has a goal for managing their condition ('Y' for Yes and 'N' for No).",
-#                         "enum": ["Y", "N"]
-#                     }
-#                 },
-#                 "required": []
-#             },
-#             "familyMedicalHistory": {
-#                 "type": "string",
-#                 "description": "Details about the family's medical history."
-#             },
-#             "previousScreenings": {
-#                 "type": "object",
-#                 "description": "A record of previous health screenings.",
-#                 "properties": {
-#                     "mammography": {
-#                         "type": "string",
-#                         "description": "Indicates if a mammography was performed ('Y' for Yes and 'N' for No).",
-#                         "enum": ["Y", "N"]
-#                     },
-#                     "mammographyDate": {
-#                         "type": "string",
-#                         "description": "The date of the mammography in `YYYY-MM-DD` format if `mammography` is 'Y'."
-#                     },
-#                     "papsmear": {
-#                         "type": "string",
-#                         "description": "Indicates if a pap smear was performed ('Y' for Yes and 'N' for No).",
-#                         "enum": ["Y", "N"]
-#                     },
-#                     "papsmearDate": {
-#                         "type": "string",
-#                         "description": "The date of the pap smear in `YYYY-MM-DD` format if `papsmear` is 'Y'."
-#                     },
-#                     "boneDensityTests": {
-#                         "type": "string",
-#                         "description": "Indicates if bone density tests were performed ('Y' for Yes and 'N' for No).",
-#                         "enum": ["Y", "N"]
-#                     },
-#                     "boneDensityTestsDate": {
-#                         "type": "string",
-#                         "description": "The date of the bone density tests in `YYYY-MM-DD` format if `boneDensityTests` is 'Y'."
-#                     },
-#                     "psa": {
-#                         "type": "string",
-#                         "description": "Indicates if a PSA test was performed ('Y' for Yes and 'N' for No).",
-#                         "enum": ["Y", "N"]
-#                     },
-#                     "psaDate": {
-#                         "type": "string",
-#                         "description": "The date of the PSA test in `YYYY-MM-DD` format if `psa` is 'Y'."
-#                     },
-#                     "previousFIT": {
-#                         "type": "string",
-#                         "description": "Indicates if a previous FIT (Fecal Immunochemical Test) was performed ('Y' for Yes and 'N' for No).",
-#                         "enum": ["Y", "N"]
-#                     },
-#                     "previousFITDate": {
-#                         "type": "string",
-#                         "description": "The date of the previous FIT in `YYYY-MM-DD` format if `previousFIT` is 'Y'."
-#                     },
-#                     "colonoscopy": {
-#                         "type": "string",
-#                         "description": "Indicates if a colonoscopy was performed ('Y' for Yes and 'N' for No).",
-#                         "enum": ["Y", "N"]
-#                     },
-#                     "colonoscopyDate": {
-#                         "type": "string",
-#                         "description": "The date of the colonoscopy in `YYYY-MM-DD` format if `colonoscopy` is 'Y'."
-#                     },
-#                     "other": {
-#                         "type": "string",
-#                         "description": "Details of other previous screenings."
-#                     }
-#                 },
-#                 "required": []
-#             },
-#             "labResults": {
-#                 "type": "array",
-#                 "description": "A list of the patient's lab test results.",
-#                 "items": {
-#                     "type": "object",
-#                     "properties": {
-#                         "categoryName": {
-#                             "type": "string",
-#                             "description": "The name of the lab test category."
-#                         },
-#                         "assessmentServiceName": {
-#                             "type": "string",
-#                             "description": "The name of the assessment service."
-#                         },
-#                         "patientCondition": {
-#                             "type": "string",
-#                             "description": "The patient's condition related to the test."
-#                         },
-#                         "date": {
-#                             "type": "string",
-#                             "description": "The date the lab test was performed in `YYYY-MM-DD` format."
-#                         },
-#                         "attachmentUrl": {
-#                             "type": "string",
-#                             "description": "A URL to the lab test result attachment."
-#                         },
-#                         "provider": {
-#                             "type": "string",
-#                             "description": "The provider of the lab test."
-#                         },
-#                         "notes": {
-#                             "type": "string",
-#                             "description": "Additional notes about the lab results."
-#                         }
-#                     }
-#                 },
-#                 "required": []
-#             },
-#             "imagingResults": {
-#                 "type": "array",
-#                 "description": "A list of the patient's imaging test results.",
-#                 "items": {
-#                     "type": "object",
-#                     "properties": {
-#                         "categoryName": {
-#                             "type": "string",
-#                             "description": "The name of the imaging test category."
-#                         },
-#                         "assessmentServiceName": {
-#                             "type": "string",
-#                             "description": "The name of the assessment service."
-#                         },
-#                         "patientCondition": {
-#                             "type": "string",
-#                             "description": "The patient's condition related to the imaging test."
-#                         },
-#                         "date": {
-#                             "type": "string",
-#                             "description": "The date the imaging test was performed in YYYY-MM-DD format."
-#                         },
-#                         "attachmentUrl": {
-#                             "type": "string",
-#                             "description": "A URL to the imaging result attachment."
-#                         },
-#                         "provider": {
-#                             "type": "string",
-#                             "description": "The provider of the imaging test."
-#                         },
-#                         "notes": {
-#                             "type": "string",
-#                             "description": "Additional notes about the imaging results."
-#                         }
-#                     }
-#                 },
-#                 "required": []
-#             },
-#             "required": []
-#         }
-#     }
-# }
 
 # {
     # "startDate": "2025-08-28",
