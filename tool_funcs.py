@@ -855,6 +855,18 @@ def member_call_history(dynamic_constants: DynamicConstants):
     except Exception as e:
         return {"error": "Sorry, I can't fetch member's call history at the moment. Please try again later."}
 
+def get_member_services(dynamic_constants: DynamicConstants):
+    """Fetches suggested and additional services for currently logged-in member"""
+
+    try:
+        endpoint_name = "/fetch_member_services_month_category_wise_v2"
+        data = {"userId": dynamic_constants.user_id}
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
+        return output.get("data", {})
+    except Exception as e:
+        return {"error": "Sorry, I can't fetch member's services at the moment. Please try again later."}
+
+
 # {
     # "startDate": "2025-08-28",
     # "endDate": "2025-09-03",
@@ -964,5 +976,6 @@ TOOL_MAP = {
     "get_calender_calls": get_calender_calls,
     "add_bmi": add_bmi,
     "member_call_history": member_call_history,
+    "get_member_services": get_member_services,
     "get_task_list": get_task_list
 }

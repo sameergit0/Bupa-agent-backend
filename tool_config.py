@@ -951,6 +951,16 @@ fetch_member_call_history_declaration = {
     }
 }
 
+fetch_member_services_declaration = {
+    "name": "get_member_services",
+    "description": "Retrieves a comprehensive list of all a member's services. This includes a monthly breakdown of suggested services by category, as well as a list of additional services.",
+    "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+    }
+}
+
 # {
     # "startDate": "2025-08-28",
     # "endDate": "2025-09-03",
@@ -1045,6 +1055,6 @@ TOOLS = [
                                fetch_weekly_summary_declaration, fetch_members_stratification_declaration, fetch_pathway_breakup_declaration, fetch_new_report_members_declaration,
                                fetch_requested_services_declaration, fetch_working_plans_and_breaks_declaration, add_break_declaration, delete_break_declaration,
                                search_view_member_under_cn_declaration, fetch_calender_calls_declaration, add_bmi_declaration, fetch_member_call_history_declaration,
-                               fetch_task_list_declaration]
+                               fetch_member_services_declaration, fetch_task_list_declaration]
     )
 ]
