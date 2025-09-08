@@ -81,6 +81,7 @@ async def handle_ai_chat_success(sid, payload):
     payload = payload or {}
     message = payload.get("message") or payload.get("input") or ""
     user_id = payload.get("userId")
+    cn_id = payload.get("cnId")
     access_token = payload.get("accessToken")
     session_id = payload.get("sessionId")
     client_ts = payload.get("timestamp")
@@ -91,16 +92,17 @@ async def handle_ai_chat_success(sid, payload):
         "accessToken": access_token,
         "sessionId": session_id,
         "timestamp": client_ts,
+        "cnId": cn_id
     }
     print("--------------------------------------------")
-    print(f"client's message: {message}")
+    print(f"client's message (meta): {meta}")
     print("--------------------------------------------")
 
-    logger.info(f"[ai_chat_success] sid={sid} sessionId={session_id} userId={user_id} message={message!r}")
+    logger.info(f"[ai_chat_success] sid={sid} sessionId={session_id} userId={user_id} cnId={cn_id} message={message!r}")
 
     chat = sid_to_chat.get(sid)
     if not chat or chat.user_id != user_id:
-        chat = LLMChatSession(user_id=user_id, access_token=access_token)
+        chat = LLMChatSession(user_id=user_id, access_token=access_token, cn_id=cn_id)
         sid_to_chat[sid] = chat
         
     try:
@@ -118,6 +120,7 @@ async def handle_ai_chat_success(sid, payload):
         "data": reply_text,
         "sessionId": session_id,
         "userId": user_id,
+        "cnId": cn_id,
         "message": message,
         "timestamp": client_ts or now_iso(),
     }

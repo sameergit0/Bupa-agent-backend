@@ -907,7 +907,7 @@ def get_task_list(dynamic_constants: DynamicConstants, startDate: str, endDate: 
             "searchTaskType": searchTaskType,
             "searchPriority": searchPriority,
             "searchStatus": searchStatus,
-            "searchCarenavigator": "ZXNveTBCSmRjTGhONXBMTFlLZ1lNZz09",
+            "searchCarenavigator": dynamic_constants.cn_id,
             "searchPrograms": searchPrograms,
             "searchConditions": searchConditions,
             "searchCompletedBy": "",

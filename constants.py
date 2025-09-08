@@ -7,9 +7,10 @@ import mimetypes
 import concurrent.futures
 
 class DynamicConstants:
-    def __init__(self, user_id, access_token):
+    def __init__(self, user_id, access_token, cn_id=None):
         self.user_id = user_id
         self.access_token = access_token
+        self.cn_id = cn_id
         self.user_profile = None
         self.disenrollment_reasons_list = []
         self.reason_names = []
