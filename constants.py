@@ -8,7 +8,7 @@ import concurrent.futures
 
 class DynamicConstants:
     def __init__(self, user_id, access_token, cn_id=None):
-        self.user_id = user_id
+        self.user_id = user_id if user_id is not None else ""
         self.access_token = access_token
         self.cn_id = cn_id
         self.user_profile = None
@@ -175,9 +175,13 @@ class DynamicConstants:
         """Fetches disenrollment reasons"""
 
         endpoint_name = "/fetch_disenrollment_reasons"
+        if not (self.user_profile and "data" in self.user_profile and "info" in self.user_profile["data"] and self.user_profile["data"]["info"] and "memberPathways" in self.user_profile["data"]["info"] and self.user_profile["data"]["info"]["memberPathways"]):
+            return {}
         mp = self.user_profile["data"]["info"]["memberPathways"][0]
-        programId = mp["programId"]
-        conditionId = mp["conditionId"]
+        programId = mp.get("programId")
+        conditionId = mp.get("conditionId")
+        if not programId or not conditionId:
+            return {}
         data = {"userId": self.user_id, "programId": programId, "conditionId": conditionId}
         output = make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
         return output
@@ -218,6 +222,8 @@ class DynamicConstants:
         """Fetchs required information for home based services"""
 
         endpoint_name = "/fetch_form_data"
+        if not (self.user_profile and "data" in self.user_profile and "info" in self.user_profile["data"] and self.user_profile["data"]["info"] and "membershipNumber" in self.user_profile["data"]["info"]):
+            return {}
         data = {"membership": self.user_profile["data"]["info"]["membershipNumber"]}
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output
@@ -226,6 +232,8 @@ class DynamicConstants:
         """Fetches required information for home care request"""
 
         endpoint_name = "/fetch_home_care"
+        if not (self.user_profile and "data" in self.user_profile and "info" in self.user_profile["data"] and self.user_profile["data"]["info"] and "membershipNumber" in self.user_profile["data"]["info"]):
+            return {}
         data = {"membership": self.user_profile["data"]["info"]["membershipNumber"]}
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output
@@ -234,6 +242,8 @@ class DynamicConstants:
         """Fetches required information for home base request"""
 
         endpoint_name = "/fetch_home_base"
+        if not (self.user_profile and "data" in self.user_profile and "info" in self.user_profile["data"] and self.user_profile["data"]["info"] and "membershipNumber" in self.user_profile["data"]["info"]):
+            return {}
         data = {"membership": self.user_profile["data"]["info"]["membershipNumber"]}
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output

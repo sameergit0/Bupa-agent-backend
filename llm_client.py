@@ -80,7 +80,7 @@ def _sleep_with_jitter(base: float, attempt: int) -> None:
 
 class LLMChatSession:
     def __init__(self, user_id: str, access_token: str, cn_id: Optional[str] = None):
-        self.user_id = user_id
+        self.user_id = user_id if user_id is not None else ""
         self.access_token = access_token
         self.cn_id = cn_id
         self.dynamic_constants = DynamicConstants(user_id, access_token, cn_id)

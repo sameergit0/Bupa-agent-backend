@@ -81,6 +81,8 @@ async def handle_ai_chat_success(sid, payload):
     payload = payload or {}
     message = payload.get("message") or payload.get("input") or ""
     user_id = payload.get("userId")
+    if user_id is None:
+        user_id = ""
     cn_id = payload.get("cnId")
     access_token = payload.get("accessToken")
     session_id = payload.get("sessionId")
