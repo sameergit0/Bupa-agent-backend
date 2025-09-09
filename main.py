@@ -128,10 +128,10 @@ async def handle_ai_chat_success(sid, payload):
     }
 
     # reply to this socket
-    print("--------------------------------------------")
-    print(f"model's response: {reply_text}")
-    print("--------------------------------------------")
-    print("End time", datetime.now())
+    # print("--------------------------------------------")
+    # print(f"model's response: {reply_text}")
+    # print("--------------------------------------------")
+    # print("End time", datetime.now())
     await sio.emit("ai_chat_response", out, to=sid)
 
     # also broadcast to the room (if using rooms)

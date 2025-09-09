@@ -1,5 +1,6 @@
 from enc_dec import make_request
 import tkinter as tk
+from datetime import datetime, timedelta
 from tkinter import filedialog, messagebox
 import base64
 import os
@@ -51,6 +52,7 @@ class DynamicConstants:
         self.break_reason_names = []
         self.task_type_names = []
         self.task_type_lookup = {}
+        self.task_list = {}
 
     def load(self):
         self.user_profile = self.fetch_user_profile_details()
@@ -138,6 +140,9 @@ class DynamicConstants:
         task_types = results.get("task_types", {})
         self.task_type_names = [item.get('taskDescription') for item in task_types.get('data', {}).get('taskTypes', []) if item.get('taskDescription')]
         self.task_type_lookup = {item.get('taskDescription'): item.get('taskType') for item in task_types.get('data', {}).get('taskTypes', []) if item.get('taskDescription') and item.get('taskType')}
+
+        if self.user_profile and "data" in self.user_profile and "info" in self.user_profile["data"] and self.user_profile["data"]["info"]:
+            self.task_list = self.cn_task_list()
 
     def select_file(self):
         root = tk.Tk()
@@ -279,3 +284,34 @@ class DynamicConstants:
         data = {}
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output
+    
+    def cn_task_list(self):
+        """Fetches all tasks list for all member's under care navigator"""
+
+        try:
+            endpoint_name = "/fetch_task_list"
+            today_date = datetime.now().date()
+            start_date = today_date - timedelta(days=7)
+            data = {"startDate": start_date.strftime("%Y-%m-%d"),
+                    "endDate": today_date.strftime("%Y-%m-%d"),
+                    "searchStr": self.user_profile["data"]["info"]["membershipNumber"],
+                    "searchTaskType": "",
+                    "searchPriority": "",
+                    "searchStatus": "overdue,new,risk",
+                    "searchCarenavigator": "OWh0NSsrOXpEZU5POXEyL21Td2tMZz09",
+                    "searchPrograms": "",
+                    "searchConditions": "",
+                    "searchCompletedBy": "",
+                    "searchContract": "",
+                    "calledFrom": "tasklist",
+                    "page": 1,
+                    "perPage": 10,
+                    "sortColumn": "",
+                    "sortDirection": "asc",
+                    "download": "N"} 
+            print("data------------------------------------------------------------------------------------------------------------------", data)
+
+            output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
+            return output
+        except Exception as e:
+            return {"error": "Sorry, I can't fetch care navigator's task list at the moment. Please try again later."}
