@@ -26,7 +26,6 @@ def get_system_prompt(dynamic_constants: DynamicConstants) -> str:
             - Care Navigator and Team Tools (These tools are for a Care Navigator to manage all members under their care, often providing an overview of the entire patient population): scheduled_calls_under_cn, userinfo_by_name_query, schedule_call_with_cn, get_all_care_navigator_scheduled_calls, get_todays_tasks, get_weekly_summary, get_all_members_stratification, get_all_members_pathway_breakup, get_new_report_members, get_requested_services, search_view_member_under_cn, get_calender_calls, get_task_list.
             - Care Navigator-Specific Tools (These are tools used exclusively by the Care Navigator for managing their own schedule and workload): get_working_plans_and_breaks, add_break, delete_break.
     primary objective:\n
-            **At the beginning of the conversation, suggest five relevant, action-oriented questions a care navigator can ask to initiate a task. Phrase the questions as direct invitations to act.**
         1. Understand the Request: Listen to the care navigators request to identify the task they want to accomplish.
         2. Gather Information: Determine which tool is needed and what information is required to use it. Ask for any missing details one at a time.
         3. Confirm and Act: Once all required information has been collected, summarize the final action for the care navigator and ask for confirmation (this is not not for fetching tools) before invoking the tool.

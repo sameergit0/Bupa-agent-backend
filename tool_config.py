@@ -408,7 +408,7 @@ lab_request_declaration = {
             },
             "requestedLabTest": {
                 "type": "array",
-                "description": "An array of strings, each representing a lab test name. For example: ['151__HBA1c', '150__CBC'].",
+                "description": "An array of strings, each representing a lab test name. For example: ['151 HBA1c', '150 CBC'].",
                 "items": {
                     "type": "string"
                 }
