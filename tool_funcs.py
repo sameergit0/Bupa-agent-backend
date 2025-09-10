@@ -887,18 +887,47 @@ def get_member_services(dynamic_constants: DynamicConstants):
 #     "download": "N"
 # } 
 
-def get_task_list(dynamic_constants: DynamicConstants, startDate: str, endDate: str, taskType: str = "", priority: str = "", searchStatus: str = "", searchPrograms: str = "", searchConditions: str = ""):
+def get_task_list_member_profile(self):
+        """Fetches the task list for a specific member from their profile."""
+        try:
+            endpoint_name = "/fetch_task_list"
+            data = {
+                "calledFrom": "memberprofile",
+                "download": "N",
+                "endDate": "",
+                "page": 1,
+                "perPage": 50,
+                "searchCarenavigator": "",
+                "searchCompletedBy": "",
+                "searchConditions": "",
+                "searchContract": "",
+                "searchPriority": "",
+                "searchPrograms": "",
+                "searchStatus": "new,risk,overdue",
+                "searchStr": self.user_profile["data"]["info"]["membershipNumber"],
+                "searchTaskType": "",
+                "sortColumn": "dueDateTime",
+                "sortDirection": "asc",
+                "startDate": "",
+            }
+            output = make_request(
+                data=data,
+                endpoint_name=endpoint_name,
+                access_token=self.access_token,
+            )
+            return output
+        except Exception as e:
+            return {"error": "Sorry, I can't fetch the task list from the member's profile at the moment. Please try again later."}
+
+
+def get_task_list(dynamic_constants: DynamicConstants, startDate: str, endDate: str, taskType: list = [], priority: list = [], searchStatus: str = "", searchPrograms: str = "", searchConditions: str = ""):
     """Fetches all tasks list for all member's under care navigator"""
 
     try:
         endpoint_name = "/fetch_task_list"
         
-        mapped_task_types = [dynamic_constants.task_type_lookup.get(task) for task in taskType]
-        searchTaskType = ",".join(mapped_task_types)
-
+        searchTaskType = ",".join([dynamic_constants.task_type_lookup.get(task) for task in taskType if dynamic_constants.task_type_lookup.get(task)])
         searchPriority = ",".join(priority)
-
-        
 
         data = {
             "startDate": startDate,
@@ -914,17 +943,83 @@ def get_task_list(dynamic_constants: DynamicConstants, startDate: str, endDate: 
             "searchContract": "",
             "calledFrom": "tasklist",
             "page": 1,
-            "perPage": 10,
+            "perPage": 1000,  # Fetch all records
             "sortColumn": "",
             "sortDirection": "asc",
             "download": "N"
         } 
-        print("data------------------------------------------------------------------------------------------------------------------", data)
 
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
         return {"error": "Sorry, I can't fetch care navigator's task list at the moment. Please try again later."}
+
+
+def dismiss_task(dynamic_constants: DynamicConstants, taskId: int, dismissalReason: str, dismissalComments: str = ""):
+    """Dismiss a task for the care navigator"""
+
+    try:
+        endpoint_name = "/dismiss_task"
+        data = {"taskId": taskId, "dismissalReason": dismissalReason, "dismissalComments": dismissalComments}
+        output = make_request(
+            data=data,
+            endpoint_name=endpoint_name,
+            access_token=dynamic_constants.access_token,
+        )
+        return output
+    except Exception as e:
+        return {"error": "Sorry, I can't dismiss the task at the moment. Please try again later."}
+
+
+def transfer_task(dynamic_constants: DynamicConstants, taskId: int, careNavigatorName: str, transferRemarks: str):
+    """Transfer a task to another care navigator"""
+
+    try:
+        endpoint_name = "/transfer_task"
+        care_navigator_id = dynamic_constants.care_navigator_lookup.get(careNavigatorName)
+        if not care_navigator_id:
+            return {"error": f"The care navigator '{careNavigatorName}' was not found. Please provide a valid name."}
+        data = {"taskId": taskId, "transferredToCNID": care_navigator_id, "transferRemarks": transferRemarks}
+        output = make_request(
+            data=data,
+            endpoint_name=endpoint_name,
+            access_token=dynamic_constants.access_token,
+        )
+        return output
+    except Exception as e:
+        return {"error": "Sorry, I can't transfer the task at the moment. Please try again later."}
+
+
+def fetch_monthly_service_suggestions(dynamic_constants: DynamicConstants):
+    """Fetches the monthly service suggestions for the user."""
+
+    try:
+        endpoint_name = "/fetch_member_services_month_category_wise_v2"
+        data = {"userId": dynamic_constants.user_id}
+        output = make_request(
+            data=data,
+            endpoint_name=endpoint_name,
+            access_token=dynamic_constants.access_token,
+        )
+        return output
+    except Exception as e:
+        return {"error": "Sorry, I can't fetch the monthly service suggestions at the moment. Please try again later."}
+
+
+def complete_task(dynamic_constants: DynamicConstants, taskId: int, completionOutcome: str, completionComments: str = ""):
+    """Completes a task for the care navigator"""
+
+    try:
+        endpoint_name = "/complete_task"
+        data = {"taskId": taskId, "completionOutcome": completionOutcome, "completionComments": completionComments, "taskType": "whatsappreply", "userId": dynamic_constants.user_id}
+        output = make_request(
+            data=data,
+            endpoint_name=endpoint_name,
+            access_token=dynamic_constants.access_token,
+        )
+        return output
+    except Exception as e:
+        return {"error": "Sorry, I can't complete the task at the moment. Please try again later."}
 
 TOOL_MAP = {
     "add_note": add_note,
@@ -977,5 +1072,11 @@ TOOL_MAP = {
     "add_bmi": add_bmi,
     "member_call_history": member_call_history,
     "get_member_services": get_member_services,
-    "get_task_list": get_task_list
+    "get_task_list": get_task_list,
+    "dismiss_task": dismiss_task,
+    "transfer_task": transfer_task, 
+    "fetch_monthly_service_suggestions": fetch_monthly_service_suggestions,
+    "complete_task": complete_task,
+    "get_task_list_member_profile": get_task_list_member_profile
+
 }

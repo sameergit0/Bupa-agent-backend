@@ -1036,9 +1036,99 @@ fetch_task_list_declaration = {
                 }
             }
         },
-        "required": ["startDate", "endDate", "taskType", "priority"]
+        "required": ["startDate", "endDate"]
     }
-} 
+}
+
+dismiss_task_declaration = {
+    "name": "dismiss_task",
+    "description": "Dismiss a task for the care navigator.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "taskId": {
+                "type": "integer",
+                "description": "The ID of the task to be dismissed."
+            },
+            "dismissalReason": {
+                "type": "string",
+                "description": "The reason for dismissing the task."
+            },
+            "dismissalComments": {
+                "type": "string",
+                "description": "Optional remarks for dismissing the task."
+            }
+        },
+        "required": ["taskId", "dismissalReason"]
+    }
+}
+
+transfer_task_declaration = {
+    "name": "transfer_task",
+    "description": "Transfer a task to another care navigator.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "taskId": {
+                "type": "integer",
+                "description": "The ID of the task to be transferred."
+            },
+            "careNavigatorName": {
+                "type": "string",
+                "description": "The name of the care navigator to whom the task will be transferred."
+            },
+            "transferRemarks": {
+                "type": "string",
+                "description": "Remarks for transferring the task."
+            }
+        },
+        "required": ["taskId", "careNavigatorName", "transferRemarks"]
+    }
+}
+
+fetch_monthly_service_suggestions_declaration = {
+    "name": "fetch_monthly_service_suggestions",
+    "description": "Fetches the monthly service suggestions for the user.",
+    "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+    }
+}
+
+get_task_list_member_profile_declaration = {
+    "name": "get_task_list_member_profile",
+    "description": "Fetches the task list for a specific member from their profile.",
+    "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+    }
+}
+
+
+complete_task_declaration = {
+    "name": "complete_task",
+    "description": "Completes a task for the care navigator.",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "taskId": {
+                "type": "integer",
+                "description": "The ID of the task to be completed."
+            },
+            "completionOutcome": {
+                "type": "string",
+                "description": "The outcome of the task completion."
+            },
+            "completionComments": {
+                "type": "string",
+                "description": "Optional remarks for completing the task."
+            }
+        },
+        "required": ["taskId", "completionOutcome"]
+    }
+}
 
 
 TOOLS = [
@@ -1055,6 +1145,7 @@ TOOLS = [
                                fetch_weekly_summary_declaration, fetch_members_stratification_declaration, fetch_pathway_breakup_declaration, fetch_new_report_members_declaration,
                                fetch_requested_services_declaration, fetch_working_plans_and_breaks_declaration, add_break_declaration, delete_break_declaration,
                                search_view_member_under_cn_declaration, fetch_calender_calls_declaration, add_bmi_declaration, fetch_member_call_history_declaration,
-                               fetch_member_services_declaration, fetch_task_list_declaration]
+                               fetch_member_services_declaration, fetch_task_list_declaration, dismiss_task_declaration, transfer_task_declaration, fetch_monthly_service_suggestions_declaration, complete_task_declaration, get_task_list_member_profile_declaration
+                               ],
     )
 ]

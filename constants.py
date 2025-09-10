@@ -1,6 +1,6 @@
 from enc_dec import make_request
 import tkinter as tk
-from datetime import datetime, timedelta
+from datetime import date, timedelta
 from tkinter import filedialog, messagebox
 import base64
 import os
@@ -52,7 +52,14 @@ class DynamicConstants:
         self.break_reason_names = []
         self.task_type_names = []
         self.task_type_lookup = {}
-        self.task_list = {}
+        self.task_type_names = []
+        self.task_type_lookup = {}
+        self.dismiss_reason_names = []
+        self.dismiss_reason_lookup = {}
+        self.complete_reason_names = []
+        self.complete_reason_lookup = {}
+        self.care_navigator_names = []
+        self.care_navigator_lookup = {}
 
     def load(self):
         self.user_profile = self.fetch_user_profile_details()
@@ -70,7 +77,10 @@ class DynamicConstants:
                 executor.submit(self.fetch_report_types): "report_types",
                 executor.submit(self.fetch_conditions): "conditions",
                 executor.submit(self.fetch_break_reasons): "break_reasons",
-                executor.submit(self.fetch_task_types): "task_types"
+                executor.submit(self.fetch_task_types): "task_types",
+                executor.submit(self.fetch_dismiss_reasons): "dismiss_reasons",
+                executor.submit(self.fetch_complete_reasons): "complete_reasons",
+                executor.submit(self.fetch_care_navigator_list): "care_navigator_list"
             }
 
             results = {}
@@ -134,6 +144,18 @@ class DynamicConstants:
         self.condition_names = [item.get('conditionName') for item in conditions.get('data', {}).get('conditions', []) if item.get('conditionName')]
         self.condition_lookup = {item.get('conditionName'): item.get('conditionId') for item in conditions.get('data', {}).get('conditions', []) if item.get('conditionName') and item.get('conditionId')}
 
+        dismiss_reasons = results.get("dismiss_reasons", {})
+        self.dismiss_reason_names = [item.get('dropdownLabel') for item in dismiss_reasons.get('data', {}).get('options', []) if item.get('dropdownLabel')]
+        self.dismiss_reason_lookup = {item.get('dropdownLabel'): item.get('dropdownValue') for item in dismiss_reasons.get('data', {}).get('options', []) if item.get('dropdownLabel') and item.get('dropdownValue')}
+
+        complete_reasons = results.get("complete_reasons", {})
+        self.complete_reason_names = [item.get('dropdownLabel') for item in complete_reasons.get('data', {}).get('options', []) if item.get('dropdownLabel')]
+        self.complete_reason_lookup = {item.get('dropdownLabel'): item.get('dropdownValue') for item in complete_reasons.get('data', {}).get('options', []) if item.get('dropdownLabel') and item.get('dropdownValue')}
+
+        care_navigator_list = results.get("care_navigator_list", {})
+        self.care_navigator_names = [item.get('userName') for item in care_navigator_list.get('data', {}).get('users', []) if item.get('userName')]
+        self.care_navigator_lookup = {item.get('userName'): item.get('id') for item in care_navigator_list.get('data', {}).get('users', []) if item.get('userName') and item.get('id')}
+
         break_reasons = results.get("break_reasons", {})
         self.break_reason_names = [item.get('reason') for item in break_reasons.get('data', {}).get('reasons', []) if item.get('reason')]
 
@@ -141,9 +163,9 @@ class DynamicConstants:
         self.task_type_names = [item.get('taskDescription') for item in task_types.get('data', {}).get('taskTypes', []) if item.get('taskDescription')]
         self.task_type_lookup = {item.get('taskDescription'): item.get('taskType') for item in task_types.get('data', {}).get('taskTypes', []) if item.get('taskDescription') and item.get('taskType')}
 
-        if self.user_profile and "data" in self.user_profile and "info" in self.user_profile["data"] and self.user_profile["data"]["info"]:
-            self.task_list = self.cn_task_list()
+        
 
+    
     def select_file(self):
         root = tk.Tk()
         root.withdraw()
@@ -285,33 +307,27 @@ class DynamicConstants:
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output
     
-    def cn_task_list(self):
-        """Fetches all tasks list for all member's under care navigator"""
+   
+    def fetch_dismiss_reasons(self):
+        """Fetches dismiss reasons"""
 
-        try:
-            endpoint_name = "/fetch_task_list"
-            today_date = datetime.now().date()
-            start_date = today_date - timedelta(days=7)
-            data = {"startDate": start_date.strftime("%Y-%m-%d"),
-                    "endDate": today_date.strftime("%Y-%m-%d"),
-                    "searchStr": self.user_profile["data"]["info"]["membershipNumber"],
-                    "searchTaskType": "",
-                    "searchPriority": "",
-                    "searchStatus": "overdue,new,risk",
-                    "searchCarenavigator": "OWh0NSsrOXpEZU5POXEyL21Td2tMZz09",
-                    "searchPrograms": "",
-                    "searchConditions": "",
-                    "searchCompletedBy": "",
-                    "searchContract": "",
-                    "calledFrom": "tasklist",
-                    "page": 1,
-                    "perPage": 10,
-                    "sortColumn": "",
-                    "sortDirection": "asc",
-                    "download": "N"} 
-            print("data------------------------------------------------------------------------------------------------------------------", data)
+        endpoint_name = "/fetch_dropdown_list"
+        data = {"settingKeyword": "taskdismissreasoncncall"}
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
+        return output
+    
+    def fetch_complete_reasons(self):
+        """Fetches dismiss reasons"""
 
-            output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
-            return output
-        except Exception as e:
-            return {"error": "Sorry, I can't fetch care navigator's task list at the moment. Please try again later."}
+        endpoint_name = "/fetch_dropdown_list"
+        data = {"settingKeyword": "taskcompletionmemberreachout"}
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
+        return output
+    
+    def fetch_care_navigator_list(self):
+        """Fetches care navigator list"""
+
+        endpoint_name = "/care_navigator_list"
+        data = {"excludeCapacityExhausted": "", "excludeSelf": "", "hideReadOnly": "Y", "supervisor": ""}
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
+        return output
