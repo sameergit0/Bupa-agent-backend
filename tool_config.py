@@ -983,7 +983,7 @@ fetch_member_services_declaration = {
 
 fetch_task_list_declaration = {
     "name": "get_task_list",
-    "description": "Fetches a list of tasks for the currently logged-in care navigator. The tasks can be filtered by date range, type, priority, status, program, and condition.",
+    "description": "Fetches a list of tasks for the currently logged-in care navigator.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -994,46 +994,6 @@ fetch_task_list_declaration = {
             "endDate": {
                 "type": "string",
                 "description": "The end date to fetch tasks, in 'YYYY-MM-DD' format."
-            },
-            "taskType": {
-                "type": "array",
-                "description": "An array of strings to filter tasks by their type. For example: ['CareNavigator Call', 'WhatsApp Reply'].",
-                "items": {
-                    "type": "string",
-                    # "enum": ["cncall", "labApproval", "labrequest", "medicationrequest", "memberreachout", "reportinterpretation", "servicesfailed", "telehealthconsultation", "whatsappreply"]
-                }
-            },
-            "priority": {
-                "type": "array",
-                "description": "An array of strings to filter tasks by priority. For example: ['high', 'medium'].",
-                "items": {
-                    "type": "string",
-                    "enum": ["critical", "high", "medium", "low"]
-                }
-            },
-            "searchStatus": {
-                "type": "array",
-                "description": "An optional array of strings to filter tasks by status. For example: ['risk', 'expired'].",
-                "items": {
-                    "type": "string",
-                    "enum": ["overdue", "risk", "new", "completed", "dismissed", "expired"]
-                }
-            },
-            "searchPrograms":{
-                "type": "array",
-                "description": "An optional array of strings to filter tasks by program. For example: ['ACM Pro', 'lifestyle changes'].",
-                "items": {
-                    "type": "string",
-                    "enum": ["ACM Pro", "Aramco Preventive", "Cardiac Program", "Care Connect Model", "Care Connect Model For COPD", "lifestyle changes", "Light CCM", "Men Health", "WomenHealth", "World Class Global Expertise"]
-                }
-            },
-            "searchConditions": {
-                "type": "array",
-                "description": "An optional array of strings to filter tasks by condition. For example: ['Dyslipidemia', 'Rheumatoid Arthritis'].",
-                "items": {
-                    "type": "string",
-                    "enum": ["Arrhythmia", "Asthma", "Case Coordination", "COPD", "Diabetes Mellitus", "Diabetes with hypothyroidism", "Diabetic Kidney Disease", "Dyslipidemia", "Healthy Body", "Hypertension", "Hyperthyroidism", "Hypothyroidism", "Laboratory Management", "Medication Management", "Mental Health", "Mental Health Club two", "Physical Health Club One", "Rheumatoid Arthritis", "Systemic Lupus Erythematosus", "Well Controlled", "XXXYY"]
-                }
             }
         },
         "required": ["startDate", "endDate"]
@@ -1096,16 +1056,6 @@ fetch_monthly_service_suggestions_declaration = {
     }
 }
 
-get_task_list_member_profile_declaration = {
-    "name": "get_task_list_member_profile",
-    "description": "Fetches the task list for a specific member from their profile.",
-    "parameters": {
-        "type": "object",
-        "properties": {},
-        "required": []
-    }
-}
-
 
 complete_task_declaration = {
     "name": "complete_task",
@@ -1145,7 +1095,7 @@ TOOLS = [
                                fetch_weekly_summary_declaration, fetch_members_stratification_declaration, fetch_pathway_breakup_declaration, fetch_new_report_members_declaration,
                                fetch_requested_services_declaration, fetch_working_plans_and_breaks_declaration, add_break_declaration, delete_break_declaration,
                                search_view_member_under_cn_declaration, fetch_calender_calls_declaration, add_bmi_declaration, fetch_member_call_history_declaration,
-                               fetch_member_services_declaration, fetch_task_list_declaration, dismiss_task_declaration, transfer_task_declaration, fetch_monthly_service_suggestions_declaration, complete_task_declaration, get_task_list_member_profile_declaration
+                               fetch_member_services_declaration, fetch_task_list_declaration, dismiss_task_declaration, transfer_task_declaration, fetch_monthly_service_suggestions_declaration, complete_task_declaration,
                                ],
     )
 ]

@@ -50,16 +50,13 @@ class DynamicConstants:
             "Telehealth Services": "ths"
         }
         self.break_reason_names = []
-        self.task_type_names = []
-        self.task_type_lookup = {}
-        self.task_type_names = []
-        self.task_type_lookup = {}
         self.dismiss_reason_names = []
         self.dismiss_reason_lookup = {}
         self.complete_reason_names = []
         self.complete_reason_lookup = {}
         self.care_navigator_names = []
         self.care_navigator_lookup = {}
+        self.current_cn = ""
 
     def load(self):
         self.user_profile = self.fetch_user_profile_details()
@@ -75,9 +72,7 @@ class DynamicConstants:
                 executor.submit(self.fetch_home_care_details): "home_care_details",
                 executor.submit(self.fetch_home_base_details): "home_base_details",
                 executor.submit(self.fetch_report_types): "report_types",
-                executor.submit(self.fetch_conditions): "conditions",
                 executor.submit(self.fetch_break_reasons): "break_reasons",
-                executor.submit(self.fetch_task_types): "task_types",
                 executor.submit(self.fetch_dismiss_reasons): "dismiss_reasons",
                 executor.submit(self.fetch_complete_reasons): "complete_reasons",
                 executor.submit(self.fetch_care_navigator_list): "care_navigator_list"
@@ -140,10 +135,6 @@ class DynamicConstants:
         self.report_type_names = [item.get('reportType') for item in report_types.get('data', {}).get('reportTypes', []) if item.get('reportType')]
         self.report_type_lookup = {item.get('reportType'): item.get('reportTypeId') for item in report_types.get('data', {}).get('reportTypes', []) if item.get('reportType') and item.get('reportTypeId')}
 
-        conditions = results.get("conditions", {})
-        self.condition_names = [item.get('conditionName') for item in conditions.get('data', {}).get('conditions', []) if item.get('conditionName')]
-        self.condition_lookup = {item.get('conditionName'): item.get('conditionId') for item in conditions.get('data', {}).get('conditions', []) if item.get('conditionName') and item.get('conditionId')}
-
         dismiss_reasons = results.get("dismiss_reasons", {})
         self.dismiss_reason_names = [item.get('dropdownLabel') for item in dismiss_reasons.get('data', {}).get('options', []) if item.get('dropdownLabel')]
         self.dismiss_reason_lookup = {item.get('dropdownLabel'): item.get('dropdownValue') for item in dismiss_reasons.get('data', {}).get('options', []) if item.get('dropdownLabel') and item.get('dropdownValue')}
@@ -155,6 +146,7 @@ class DynamicConstants:
         care_navigator_list = results.get("care_navigator_list", {})
         self.care_navigator_names = [item.get('userName') for item in care_navigator_list.get('data', {}).get('users', []) if item.get('userName')]
         self.care_navigator_lookup = {item.get('userName'): item.get('id') for item in care_navigator_list.get('data', {}).get('users', []) if item.get('userName') and item.get('id')}
+        self.current_cn = care_navigator_list.get("data", {}).get("self", "")
 
         break_reasons = results.get("break_reasons", {})
         self.break_reason_names = [item.get('reason') for item in break_reasons.get('data', {}).get('reasons', []) if item.get('reason')]
@@ -162,7 +154,6 @@ class DynamicConstants:
         task_types = results.get("task_types", {})
         self.task_type_names = [item.get('taskDescription') for item in task_types.get('data', {}).get('taskTypes', []) if item.get('taskDescription')]
         self.task_type_lookup = {item.get('taskDescription'): item.get('taskType') for item in task_types.get('data', {}).get('taskTypes', []) if item.get('taskDescription') and item.get('taskType')}
-
         
 
     
@@ -283,26 +274,10 @@ class DynamicConstants:
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output
 
-    def fetch_conditions(self):
-        """Fetches all the conditions for member stratification"""
-
-        endpoint_name = "/fetch_conditions"
-        data = {}
-        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
-        return output
-
     def fetch_break_reasons(self):
         """Fetches break reason to add break"""
 
         endpoint_name = "/fetch_break_reasons"
-        data = {}
-        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
-        return output
-    
-    def fetch_task_types(self):
-        """Fetches task types"""
-
-        endpoint_name = "/fetch_task_types"
         data = {}
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output
@@ -331,3 +306,4 @@ class DynamicConstants:
         data = {"excludeCapacityExhausted": "", "excludeSelf": "", "hideReadOnly": "Y", "supervisor": ""}
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output
+    

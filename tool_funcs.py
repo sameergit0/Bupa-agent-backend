@@ -867,88 +867,35 @@ def get_member_services(dynamic_constants: DynamicConstants):
         return {"error": "Sorry, I can't fetch member's services at the moment. Please try again later."}
 
 
-# {
-#     "startDate": "2025-08-28",
-#     "endDate": "2025-09-03",
-#     "searchStr": "",
-#     "searchTaskType": "",
-#     "searchPriority": "",
-#     "searchStatus": "overdue,new,risk",
-#     "searchCarenavigator": "OWh0NSsrOXpEZU5POXEyL21Td2tMZz09",
-#     "searchPrograms": "",
-#     "searchConditions": "",
-#     "searchCompletedBy": "",
-#     "searchContract": "",
-#     "calledFrom": "tasklist",
-#     "page": 1,
-#     "perPage": 10,
-#     "sortColumn": "",
-#     "sortDirection": "asc",
-#     "download": "N"
-# } 
-
-def get_task_list_member_profile(self):
-        """Fetches the task list for a specific member from their profile."""
-        try:
-            endpoint_name = "/fetch_task_list"
-            data = {
-                "calledFrom": "memberprofile",
-                "download": "N",
-                "endDate": "",
-                "page": 1,
-                "perPage": 50,
-                "searchCarenavigator": "",
-                "searchCompletedBy": "",
-                "searchConditions": "",
-                "searchContract": "",
-                "searchPriority": "",
-                "searchPrograms": "",
-                "searchStatus": "new,risk,overdue",
-                "searchStr": self.user_profile["data"]["info"]["membershipNumber"],
-                "searchTaskType": "",
-                "sortColumn": "dueDateTime",
-                "sortDirection": "asc",
-                "startDate": "",
-            }
-            output = make_request(
-                data=data,
-                endpoint_name=endpoint_name,
-                access_token=self.access_token,
-            )
-            return output
-        except Exception as e:
-            return {"error": "Sorry, I can't fetch the task list from the member's profile at the moment. Please try again later."}
-
-
-def get_task_list(dynamic_constants: DynamicConstants, startDate: str, endDate: str, taskType: list = [], priority: list = [], searchStatus: str = "", searchPrograms: str = "", searchConditions: str = ""):
+def get_task_list(dynamic_constants: DynamicConstants, startDate: str, endDate: str):
     """Fetches all tasks list for all member's under care navigator"""
 
     try:
+        membershipNumber = ""
+        if (dynamic_constants.user_profile and "data" in dynamic_constants.user_profile and "info" in dynamic_constants.user_profile["data"] and dynamic_constants.user_profile["data"]["info"]):
+            info = dynamic_constants.user_profile["data"]["info"]
+            membershipNumber = info.get("membershipNumber", "N/A")
         endpoint_name = "/fetch_task_list"
-        
-        searchTaskType = ",".join([dynamic_constants.task_type_lookup.get(task) for task in taskType if dynamic_constants.task_type_lookup.get(task)])
-        searchPriority = ",".join(priority)
 
         data = {
             "startDate": startDate,
             "endDate": endDate,
-            "searchStr": "",
-            "searchTaskType": searchTaskType,
-            "searchPriority": searchPriority,
-            "searchStatus": searchStatus,
-            "searchCarenavigator": dynamic_constants.cn_id,
-            "searchPrograms": searchPrograms,
-            "searchConditions": searchConditions,
+            "searchStr": membershipNumber,
+            "searchTaskType": "",
+            "searchPriority": "",
+            "searchStatus": "",
+            "searchCarenavigator": dynamic_constants.current_cn,
+            "searchPrograms": "",
+            "searchConditions": "",
             "searchCompletedBy": "",
             "searchContract": "",
             "calledFrom": "tasklist",
             "page": 1,
-            "perPage": 1000,  # Fetch all records
+            "perPage": 1000,  
             "sortColumn": "",
             "sortDirection": "asc",
             "download": "N"
         } 
-
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=dynamic_constants.access_token)
         return output
     except Exception as e:
@@ -1077,6 +1024,4 @@ TOOL_MAP = {
     "transfer_task": transfer_task, 
     "fetch_monthly_service_suggestions": fetch_monthly_service_suggestions,
     "complete_task": complete_task,
-    "get_task_list_member_profile": get_task_list_member_profile
-
 }
