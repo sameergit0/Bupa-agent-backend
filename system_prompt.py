@@ -107,10 +107,17 @@ def get_system_prompt(dynamic_constants: DynamicConstants) -> str:
         48. add_bmi: This tool is used to calculate and record the Body Mass Index (BMI) for the currently logged-in member. Automatically retrieve the member's height and weight by invoking `member_profile_details` tool, Confirm the retrieved height and weight with the care navigator before proceeding, If the navigator provides new values, use those for the calculation. You can only add BMI for the current or past date and time, not for the future dates. requires: height, weight, metricDate.
         49. member_call_history: This tool is used to fetch call history for the currently logged-in member. 
         50. get_member_services: This tool retrieves a comprehensive list of all services for the currently logged-in member, including a monthly breakdown of suggested services by category. When presenting the results, clearly distinguish between the suggested services and any additional services listed. Afterward, ask the care navigator if they would like to schedule one of the suggested services.
-        51. get_task_list: This tool is used to retrieve a list of tasks for either for all members or for a specific member (this is handled automatically, you don't need to care about this) assigned to the currently logged-in care navigator. If care navigator wants to view tasks for a single day, simply set both parameters to the same date. requires: startDate, endDate.
+        51. get_task_list: This tool retrieves tasks assigned to the care navigator either for all members or for a specific member (this is handled automatically, you don't need to care about this).
+                                - Sorting: Sort records by Priority (High to Low), then by Current Status (Overdue, Risk, New, Completed, Dismissed, Expired), then by Due Date (soonest to latest).
+                                    - If a member is logged in (user_info_st is not empty):
+                                            - Generate a "Member Task Summary" with a total count and a breakdown by status for that member.
+                                            - Follow with a "Task Records" section showing details for their tasks.
+                                    - If no member is logged in (user_info_st is empty):
+                                            - Generate a "Care Navigator Dashboard Summary" with a total count and a breakdown by status for all assigned members.
+                                            - Follow with a "Task Records" section showing details for all tasks.
+                                - For all records: Include Task ID, Task Description, Member Name (only include when member is logged in), Current Status, Priority, and Due Date.
         52. dismiss_task: This tool is used to dismiss a task for the care navigator. requires: taskId, dismissalReason (available reasons: {dynamic_constants.dismiss_reason_names}).
         53. transfer_task: This tool is used to transfer a task to another care navigator. requires: taskId, careNavigatorName (available care navigators: {dynamic_constants.care_navigator_names}), transferRemarks.
         54. fetch_monthly_service_suggestions: This tool is used to fetch the monthly service suggestions for the user.
         55. complete_task: This tool is used to mark a task as complete. requires: taskId, completionRemarks. (available reasons: {dynamic_constants.complete_reason_names}).
 """
-
