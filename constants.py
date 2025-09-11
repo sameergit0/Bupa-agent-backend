@@ -72,6 +72,7 @@ class DynamicConstants:
                 executor.submit(self.fetch_home_care_details): "home_care_details",
                 executor.submit(self.fetch_home_base_details): "home_base_details",
                 executor.submit(self.fetch_report_types): "report_types",
+                executor.submit(self.fetch_conditions): "conditions",
                 executor.submit(self.fetch_break_reasons): "break_reasons",
                 executor.submit(self.fetch_dismiss_reasons): "dismiss_reasons",
                 executor.submit(self.fetch_complete_reasons): "complete_reasons",
@@ -134,6 +135,10 @@ class DynamicConstants:
         report_types = results.get("report_types", {})
         self.report_type_names = [item.get('reportType') for item in report_types.get('data', {}).get('reportTypes', []) if item.get('reportType')]
         self.report_type_lookup = {item.get('reportType'): item.get('reportTypeId') for item in report_types.get('data', {}).get('reportTypes', []) if item.get('reportType') and item.get('reportTypeId')}
+
+        conditions = results.get("conditions", {})
+        self.condition_names = [item.get('conditionName') for item in conditions.get('data', {}).get('conditions', []) if item.get('conditionName')]
+        self.condition_lookup = {item.get('conditionName'): item.get('conditionId') for item in conditions.get('data', {}).get('conditions', []) if item.get('conditionName') and item.get('conditionId')}
 
         dismiss_reasons = results.get("dismiss_reasons", {})
         self.dismiss_reason_names = [item.get('dropdownLabel') for item in dismiss_reasons.get('data', {}).get('options', []) if item.get('dropdownLabel')]
@@ -270,6 +275,14 @@ class DynamicConstants:
         """fetches list of available record types"""
 
         endpoint_name = "/fetch_report_types"
+        data = {}
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
+        return output
+    
+    def fetch_conditions(self):
+        """fetches list of available conditions for pathway breakup and member stratification"""
+
+        endpoint_name = "/fetch_conditions"
         data = {}
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output
