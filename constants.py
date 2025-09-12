@@ -57,6 +57,7 @@ class DynamicConstants:
         self.care_navigator_names = []
         self.care_navigator_lookup = {}
         self.current_cn = ""
+        self.insights_7_days = {}
 
     def load(self):
         self.user_profile = self.fetch_user_profile_details()
@@ -72,6 +73,7 @@ class DynamicConstants:
                 executor.submit(self.fetch_home_care_details): "home_care_details",
                 executor.submit(self.fetch_home_base_details): "home_base_details",
                 executor.submit(self.fetch_report_types): "report_types",
+                executor.submit(self.fetch_conditions): "conditions",
                 executor.submit(self.fetch_break_reasons): "break_reasons",
                 executor.submit(self.fetch_dismiss_reasons): "dismiss_reasons",
                 executor.submit(self.fetch_complete_reasons): "complete_reasons",
@@ -135,6 +137,10 @@ class DynamicConstants:
         self.report_type_names = [item.get('reportType') for item in report_types.get('data', {}).get('reportTypes', []) if item.get('reportType')]
         self.report_type_lookup = {item.get('reportType'): item.get('reportTypeId') for item in report_types.get('data', {}).get('reportTypes', []) if item.get('reportType') and item.get('reportTypeId')}
 
+        conditions = results.get("conditions", {})
+        self.condition_names = [item.get('conditionName') for item in conditions.get('data', {}).get('conditions', []) if item.get('conditionName')]
+        self.condition_lookup = {item.get('conditionName'): item.get('conditionId') for item in conditions.get('data', {}).get('conditions', []) if item.get('conditionName') and item.get('conditionId')}
+
         dismiss_reasons = results.get("dismiss_reasons", {})
         self.dismiss_reason_names = [item.get('dropdownLabel') for item in dismiss_reasons.get('data', {}).get('options', []) if item.get('dropdownLabel')]
         self.dismiss_reason_lookup = {item.get('dropdownLabel'): item.get('dropdownValue') for item in dismiss_reasons.get('data', {}).get('options', []) if item.get('dropdownLabel') and item.get('dropdownValue')}
@@ -155,7 +161,7 @@ class DynamicConstants:
         self.task_type_names = [item.get('taskDescription') for item in task_types.get('data', {}).get('taskTypes', []) if item.get('taskDescription')]
         self.task_type_lookup = {item.get('taskDescription'): item.get('taskType') for item in task_types.get('data', {}).get('taskTypes', []) if item.get('taskDescription') and item.get('taskType')}
         
-
+        self.insights_7_days = self.fetch_last_7days_task_insights().get("data", {}).get("insights", {})
     
     def select_file(self):
         root = tk.Tk()
@@ -273,6 +279,14 @@ class DynamicConstants:
         data = {}
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output
+    
+    def fetch_conditions(self):
+        """fetches list of available conditions for pathway breakup and member stratification"""
+
+        endpoint_name = "/fetch_conditions"
+        data = {}
+        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
+        return output
 
     def fetch_break_reasons(self):
         """Fetches break reason to add break"""
@@ -306,4 +320,37 @@ class DynamicConstants:
         data = {"excludeCapacityExhausted": "", "excludeSelf": "", "hideReadOnly": "Y", "supervisor": ""}
         output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         return output
-    
+
+    def fetch_last_7days_task_insights(self):
+        """Fetches all tasks list for all member's under care navigator"""
+
+        try:
+            membershipNumber = ""
+            if (self.user_profile and "data" in self.user_profile and "info" in self.user_profile["data"] and self.user_profile["data"]["info"]):
+                info = self.user_profile["data"]["info"]
+                membershipNumber = info.get("membershipNumber", "")
+            endpoint_name = "/fetch_task_list"
+
+            data = {
+                "startDate": (date.today() - timedelta(days=7)).strftime("%Y-%m-%d"),
+                "endDate": date.today().strftime("%Y-%m-%d"),
+                "searchStr": membershipNumber,
+                "searchTaskType": "",
+                "searchPriority": "",
+                "searchStatus": "",
+                "searchCarenavigator": self.current_cn,
+                "searchPrograms": "",
+                "searchConditions": "",
+                "searchCompletedBy": "",
+                "searchContract": "",
+                "calledFrom": "tasklist",
+                "page": 1,
+                "perPage": 1000,
+                "sortColumn": "",
+                "sortDirection": "asc",
+                "download": "N"
+            }
+            output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
+            return output
+        except Exception as e:
+            return {"error": "Sorry, I can't fetch care navigator's task list at the moment. Please try again later."}

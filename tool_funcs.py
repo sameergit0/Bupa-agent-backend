@@ -11,7 +11,11 @@ def add_note(dynamic_constants: DynamicConstants, notes: str):
         endpoint_name = "/add_notes"
         data = {"userId": dynamic_constants.user_id, "notes": notes}
         output = make_request(endpoint_name=endpoint_name, data=data, access_token=dynamic_constants.access_token)
-        return output
+        print("add note output",output)
+        if output.get("code") == 200:
+            return {"output": "success"}
+        else:
+            return {"output": "something went wrong, please try again!"}
     except Exception as e:
         return {"error": "Sorry, I can't add the note at the moment. Please try again later."}
     
