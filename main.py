@@ -11,6 +11,7 @@ import uvicorn
 
 from llm_client import LLMChatSession
 from tool_funcs import TOOL_MAP
+from constants import StaticConstants
 
 # ---------- Logging ----------
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -32,6 +33,7 @@ app = socketio.ASGIApp(sio)
 # Per-socket state
 sid_to_chat: Dict[str, LLMChatSession] = {}
 sid_to_room: Dict[str, str] = {}
+static_constants: Optional[StaticConstants] = None
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -102,9 +104,13 @@ async def handle_ai_chat_success(sid, payload):
 
     logger.info(f"[ai_chat_success] sid={sid} sessionId={session_id} userId={user_id} cnId={cn_id} message={message!r}")
 
+    global static_constants
+    if static_constants is None and access_token:
+        static_constants = StaticConstants(access_token=access_token)
+
     chat = sid_to_chat.get(sid)
     if not chat or chat.user_id != user_id:
-        chat = LLMChatSession(user_id=user_id, access_token=access_token, cn_id=cn_id)
+        chat = LLMChatSession(user_id=user_id, access_token=access_token, cn_id=cn_id, static_constants=static_constants)
         sid_to_chat[sid] = chat
         
     try:

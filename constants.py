@@ -7,71 +7,27 @@ import os
 import mimetypes
 import concurrent.futures
 
-class DynamicConstants:
-    def __init__(self, user_id, access_token, cn_id=None):
-        self.user_id = user_id if user_id is not None else ""
-        self.access_token = access_token
-        self.cn_id = cn_id
-        self.user_profile = None
-        self.disenrollment_reasons_list = []
-        self.reason_names = []
-        self.reason_lookup = {}
-        self.metrics_details_list = []
-        self.metric_name_unit_list = []
-        self.servies_categories_list = []
-        self.service_category_names = []
-        self.category_lookup = {}
-        self.ticket_types_list = []
-        self.ticket_type_category_names = []
-        self.ticket_type_lookup = {}
-        self.streams_list = []
-        self.stream_names = []
-        self.streams_lookup = {}
-        self.city_names = []
-        self.city_lookup = {}
-        self.partner_names = []
-        self.partner_lookup = {}
-        self.labtest_names = []
-        self.labtest_lookup = {}
-        self.hc_cat_names = []
-        self.hc_cat_lookup = {}
-        self.hb_product_names = []
-        self.hb_product_lookup = {}
-        self.report_type_names = []
-        self.report_type_lookup = {}
-        self.condition_names = []
-        self.condition_lookup = {}
-        self.request_type_lookup = {
-            "All": "all",
-            "Medication Requests": "mr",
-            "Lab Requests": "lr",
-            "Home Care Requests": "hcr",
-            "Home Based Vaccines": "hbv",
-            "Telehealth Services": "ths"
-        }
-        self.break_reason_names = []
-        self.dismiss_reason_names = []
-        self.dismiss_reason_lookup = {}
-        self.complete_reason_names = []
-        self.complete_reason_lookup = {}
-        self.care_navigator_names = []
-        self.care_navigator_lookup = {}
-        self.current_cn = ""
-        self.insights_7_days = {}
+class StaticConstants:
+    _instance = None
 
-    def load(self):
-        self.user_profile = self.fetch_user_profile_details()
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
+    def __init__(self, access_token):
+        if not hasattr(self, 'loaded'):
+            self.access_token = access_token
+            self.load_static_data()
+            self.loaded = True
+
+    def load_static_data(self):
+        print("Loading static constants for the first time...")
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_to_fetch = {
-                executor.submit(self.fetch_disenrollment_reasons): "disenrollment_reasons",
-                executor.submit(self.fetch_health_metric_details): "health_metric_details",
                 executor.submit(self.fetch_service_categories): "service_categories",
                 executor.submit(self.fetch_ticket_types): "ticket_types",
                 executor.submit(self.fetch_call_cancellation_streams): "streams",
-                executor.submit(self.fetch_form_data_details): "form_data_details",
-                executor.submit(self.fetch_home_care_details): "home_care_details",
-                executor.submit(self.fetch_home_base_details): "home_base_details",
                 executor.submit(self.fetch_report_types): "report_types",
                 executor.submit(self.fetch_conditions): "conditions",
                 executor.submit(self.fetch_break_reasons): "break_reasons",
@@ -89,15 +45,6 @@ class DynamicConstants:
                 except Exception as exc:
                     print(f'{fetch_name} generated an exception: {exc}')
 
-        disenrollment_reasons = results.get("disenrollment_reasons", {})
-        self.disenrollment_reasons_list = [{"reason": r["reason"], "recordId": r["recordId"]} for r in disenrollment_reasons.get("data", {}).get("reasons", [])]
-        self.reason_names = [reason["reason"] for reason in self.disenrollment_reasons_list]
-        self.reason_lookup = {reason["reason"]: reason["recordId"] for reason in self.disenrollment_reasons_list}
-
-        health_metric_details = results.get("health_metric_details", {})
-        self.metrics_details_list = [{"metricsName": m["metricsName"], "metricsId": m["metricsId"], "keyword": m["keyword"], "unit": m["unit"]} for m in health_metric_details.get("data", {}).get("metrics", [])]
-        self.metric_name_unit_list = [{"metricsName": entry["metricsName"], "unit": entry["unit"]} for entry in self.metrics_details_list]
-
         service_categories = results.get("service_categories", {})
         self.servies_categories_list = [{"categoryName": c["categoryName"], "categoryId": c["categoryId"]} for c in service_categories.get("data", {}).get("categories", [])]
         self.service_category_names = [category["categoryName"] for category in self.servies_categories_list]
@@ -112,26 +59,6 @@ class DynamicConstants:
         self.streams_list = [{"streamName": c["label"], "streamId": c["value"]} for c in streams.get("data", {}).get("status", {}).get("Cancelled", [])]
         self.stream_names = [stream["streamName"] for stream in self.streams_list]
         self.streams_lookup = {stream["streamName"]: stream["streamId"] for stream in self.streams_list}
-
-        form_data_details = results.get("form_data_details", {})
-        self.city_names = [item.get('label') for item in form_data_details.get('data', {}).get('city', []) if item.get('label')]
-        self.city_lookup = {item.get('label'): item.get('value') for item in form_data_details.get('data', {}).get('city', []) if item.get('label') and item.get('value')}
-        self.partner_names = [item.get('partnerName') for item in form_data_details.get('data', {}).get('partner', []) if item.get('partnerName')]
-        self.partner_lookup = {item.get('partnerName'): item.get('id') for item in form_data_details.get('data', {}).get('partner', []) if item.get('partnerName') and item.get('id')}
-        self.labtest_names = [item.get('label') for item in form_data_details.get('data', {}).get('labTest', []) if item.get('label')]
-        self.labtest_lookup = {item.get('label'): item.get('value') for item in form_data_details.get('data', {}).get('labTest', []) if item.get('label') and item.get('value')}
-
-        home_care_details = results.get("home_care_details", {})
-        self.hc_cat_names = [item.get('label') for item in home_care_details.get('data', {}).get('category', []) if item.get('label')]
-        self.hc_cat_lookup = {item.get('label'): item.get('categoryName') for item in home_care_details.get('data', {}).get('category', []) if item.get('label') and item.get('categoryName')}
-
-        home_base_details = results.get("home_base_details", {})
-        if home_base_details and home_base_details.get('data') and home_base_details.get('data').get('products'):
-            self.hb_product_names = [item.get('label') for item in home_base_details.get('data', {}).get('products', []) if item.get('label')]
-            self.hb_product_lookup = {item.get('label'): item.get('id') for item in home_base_details.get('data', {}).get('products', []) if item.get('label') and item.get('id')}
-        else:
-            self.hb_product_names = []
-            self.hb_product_lookup = {}
 
         report_types = results.get("report_types", {})
         self.report_type_names = [item.get('reportType') for item in report_types.get('data', {}).get('reportTypes', []) if item.get('reportType')]
@@ -157,9 +84,147 @@ class DynamicConstants:
         break_reasons = results.get("break_reasons", {})
         self.break_reason_names = [item.get('reason') for item in break_reasons.get('data', {}).get('reasons', []) if item.get('reason')]
 
-        task_types = results.get("task_types", {})
-        self.task_type_names = [item.get('taskDescription') for item in task_types.get('data', {}).get('taskTypes', []) if item.get('taskDescription')]
-        self.task_type_lookup = {item.get('taskDescription'): item.get('taskType') for item in task_types.get('data', {}).get('taskTypes', []) if item.get('taskDescription') and item.get('taskType')}
+    def fetch_service_categories(self):
+        endpoint_name = "/fetch_service_categories"
+        return make_request(endpoint_name=endpoint_name, data={}, access_token=self.access_token)
+
+    def fetch_ticket_types(self):
+        endpoint_name = "/fetch_all_ticket_types"
+        return make_request(endpoint_name=endpoint_name, data={}, access_token=self.access_token)
+
+    def fetch_call_cancellation_streams(self):
+        endpoint_name = "/fetch_call_status"
+        return make_request(endpoint_name=endpoint_name, data={}, access_token=self.access_token)
+
+    def fetch_report_types(self):
+        endpoint_name = "/fetch_report_types"
+        return make_request(data={}, endpoint_name=endpoint_name, access_token=self.access_token)
+
+    def fetch_conditions(self):
+        endpoint_name = "/fetch_conditions"
+        return make_request(data={}, endpoint_name=endpoint_name, access_token=self.access_token)
+
+    def fetch_break_reasons(self):
+        endpoint_name = "/fetch_break_reasons"
+        return make_request(data={}, endpoint_name=endpoint_name, access_token=self.access_token)
+
+    def fetch_dismiss_reasons(self):
+        endpoint_name = "/fetch_dropdown_list"
+        return make_request(data={"settingKeyword": "taskdismissreasoncncall"}, endpoint_name=endpoint_name, access_token=self.access_token)
+
+    def fetch_complete_reasons(self):
+        endpoint_name = "/fetch_dropdown_list"
+        return make_request(data={"settingKeyword": "taskcompletionmemberreachout"}, endpoint_name=endpoint_name, access_token=self.access_token)
+
+    def fetch_care_navigator_list(self):
+        endpoint_name = "/care_navigator_list"
+        return make_request(data={"excludeCapacityExhausted": "", "excludeSelf": "", "hideReadOnly": "Y", "supervisor": ""}, endpoint_name=endpoint_name, access_token=self.access_token)
+
+class DynamicConstants:
+    def __init__(self, user_id, access_token, cn_id, static_constants: StaticConstants):
+        self.user_id = user_id if user_id is not None else ""
+        self.access_token = access_token
+        self.cn_id = cn_id
+        
+        # --- Inherit from StaticConstants ---
+        self.servies_categories_list = static_constants.servies_categories_list
+        self.service_category_names = static_constants.service_category_names
+        self.category_lookup = static_constants.category_lookup
+        self.ticket_types_list = static_constants.ticket_types_list
+        self.ticket_type_category_names = static_constants.ticket_type_category_names
+        self.ticket_type_lookup = static_constants.ticket_type_lookup
+        self.streams_list = static_constants.streams_list
+        self.stream_names = static_constants.stream_names
+        self.streams_lookup = static_constants.streams_lookup
+        self.report_type_names = static_constants.report_type_names
+        self.report_type_lookup = static_constants.report_type_lookup
+        self.condition_names = static_constants.condition_names
+        self.condition_lookup = static_constants.condition_lookup
+        self.dismiss_reason_names = static_constants.dismiss_reason_names
+        self.dismiss_reason_lookup = static_constants.dismiss_reason_lookup
+        self.complete_reason_names = static_constants.complete_reason_names
+        self.complete_reason_lookup = static_constants.complete_reason_lookup
+        self.care_navigator_names = static_constants.care_navigator_names
+        self.care_navigator_lookup = static_constants.care_navigator_lookup
+        self.current_cn = static_constants.current_cn
+        self.break_reason_names = static_constants.break_reason_names
+        
+        # --- Dynamic Properties ---
+        self.user_profile = None
+        self.disenrollment_reasons_list = []
+        self.reason_names = []
+        self.reason_lookup = {}
+        self.metrics_details_list = []
+        self.metric_name_unit_list = []
+        self.city_names = []
+        self.city_lookup = {}
+        self.partner_names = []
+        self.partner_lookup = {}
+        self.labtest_names = []
+        self.labtest_lookup = {}
+        self.hc_cat_names = []
+        self.hc_cat_lookup = {}
+        self.hb_product_names = []
+        self.hb_product_lookup = {}
+        self.request_type_lookup = {
+            "All": "all",
+            "Medication Requests": "mr",
+            "Lab Requests": "lr",
+            "Home Care Requests": "hcr",
+            "Home Based Vaccines": "hbv",
+            "Telehealth Services": "ths"
+        }
+        self.insights_7_days = {}
+
+    def load(self):
+        self.user_profile = self.fetch_user_profile_details()
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future_to_fetch = {
+                executor.submit(self.fetch_disenrollment_reasons): "disenrollment_reasons",
+                executor.submit(self.fetch_health_metric_details): "health_metric_details",
+                executor.submit(self.fetch_form_data_details): "form_data_details",
+                executor.submit(self.fetch_home_care_details): "home_care_details",
+                executor.submit(self.fetch_home_base_details): "home_base_details",
+            }
+
+            results = {}
+            for future in concurrent.futures.as_completed(future_to_fetch):
+                fetch_name = future_to_fetch[future]
+                try:
+                    data = future.result()
+                    results[fetch_name] = data
+                except Exception as exc:
+                    print(f'{fetch_name} generated an exception: {exc}')
+
+        disenrollment_reasons = results.get("disenrollment_reasons", {})
+        self.disenrollment_reasons_list = [{"reason": r["reason"], "recordId": r["recordId"]} for r in disenrollment_reasons.get("data", {}).get("reasons", [])]
+        self.reason_names = [reason["reason"] for reason in self.disenrollment_reasons_list]
+        self.reason_lookup = {reason["reason"]: reason["recordId"] for reason in self.disenrollment_reasons_list}
+
+        health_metric_details = results.get("health_metric_details", {})
+        self.metrics_details_list = [{"metricsName": m["metricsName"], "metricsId": m["metricsId"], "keyword": m["keyword"], "unit": m["unit"]} for m in health_metric_details.get("data", {}).get("metrics", [])]
+        self.metric_name_unit_list = [{"metricsName": entry["metricsName"], "unit": entry["unit"]} for entry in self.metrics_details_list]
+
+        form_data_details = results.get("form_data_details", {})
+        self.city_names = [item.get('label') for item in form_data_details.get('data', {}).get('city', []) if item.get('label')]
+        self.city_lookup = {item.get('label'): item.get('value') for item in form_data_details.get('data', {}).get('city', []) if item.get('label') and item.get('value')}
+        self.partner_names = [item.get('partnerName') for item in form_data_details.get('data', {}).get('partner', []) if item.get('partnerName')]
+        self.partner_lookup = {item.get('partnerName'): item.get('id') for item in form_data_details.get('data', {}).get('partner', []) if item.get('partnerName') and item.get('id')}
+        self.labtest_names = [item.get('label') for item in form_data_details.get('data', {}).get('labTest', []) if item.get('label')]
+        self.labtest_lookup = {item.get('label'): item.get('value') for item in form_data_details.get('data', {}).get('labTest', []) if item.get('label') and item.get('value')}
+
+        home_care_details = results.get("home_care_details", {})
+        self.hc_cat_names = [item.get('label') for item in home_care_details.get('data', {}).get('category', []) if item.get('label')]
+        self.hc_cat_lookup = {item.get('label'): item.get('categoryName') for item in home_care_details.get('data', {}).get('category', []) if item.get('label') and item.get('categoryName')}
+
+        home_base_details = results.get("home_base_details", {})
+        if home_base_details and home_base_details.get('data') and home_base_details.get('data').get('products'):
+            self.hb_product_names = [item.get('label') for item in home_base_details.get('data', {}).get('products', []) if item.get('label')]
+            self.hb_product_lookup = {item.get('label'): item.get('id') for item in home_base_details.get('data', {}).get('products', []) if item.get('label') and item.get('id')}
+        else:
+            self.hb_product_names = []
+            self.hb_product_lookup = {}
         
         self.insights_7_days = self.fetch_last_7days_task_insights().get("data", {}).get("insights", {})
     
@@ -188,16 +253,11 @@ class DynamicConstants:
         return {"error": "No file was selected"}
 
     def fetch_user_profile_details(self):
-        """Fetches user profile details"""
-
         endpoint_name = "/fetch_user_profile_v2"
         data = {"userId": self.user_id}
-        output = make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
-        return output
+        return make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
 
     def fetch_disenrollment_reasons(self):
-        """Fetches disenrollment reasons"""
-
         endpoint_name = "/fetch_disenrollment_reasons"
         if not (self.user_profile and "data" in self.user_profile and "info" in self.user_profile["data"] and self.user_profile["data"]["info"] and "memberPathways" in self.user_profile["data"]["info"] and self.user_profile["data"]["info"]["memberPathways"]):
             return {}
@@ -207,130 +267,41 @@ class DynamicConstants:
         if not programId or not conditionId:
             return {}
         data = {"userId": self.user_id, "programId": programId, "conditionId": conditionId}
-        output = make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
-        return output
+        return make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
 
     def fetch_health_metric_details(self):
-        """Feteches available metric names and their details like unit, keyword, etc."""
-
         endpoint_name = "/fetch_generic_health_metrics"
         data = {"userId": self.user_id}
-        output = make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
-        return output
-
-    def fetch_service_categories(self):
-        """Fetches all available service categories"""
-
-        endpoint_name = "/fetch_service_categories"
-        data = {}
-        output = make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
-        return output
-
-    def fetch_ticket_types(self):
-        """Fetches ticket types for raise ticket"""
-
-        endpoint_name = "/fetch_all_ticket_types"
-        data = {}
-        output = make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
-        return output
-
-    def fetch_call_cancellation_streams(self):
-        """Fetches streams for call cancellation"""
-
-        endpoint_name = "/fetch_call_status"
-        data = {}
-        output = make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
-        return output
+        return make_request(endpoint_name=endpoint_name, data=data, access_token=self.access_token)
 
     def fetch_form_data_details(self):
-        """Fetchs required information for home based services"""
-
         endpoint_name = "/fetch_form_data"
         if not (self.user_profile and "data" in self.user_profile and "info" in self.user_profile["data"] and self.user_profile["data"]["info"] and "membershipNumber" in self.user_profile["data"]["info"]):
             return {}
         data = {"membership": self.user_profile["data"]["info"]["membershipNumber"]}
-        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
-        return output
+        return make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
 
     def fetch_home_care_details(self):
-        """Fetches required information for home care request"""
-
         endpoint_name = "/fetch_home_care"
         if not (self.user_profile and "data" in self.user_profile and "info" in self.user_profile["data"] and self.user_profile["data"]["info"] and "membershipNumber" in self.user_profile["data"]["info"]):
             return {}
         data = {"membership": self.user_profile["data"]["info"]["membershipNumber"]}
-        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
-        return output
+        return make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
 
     def fetch_home_base_details(self):
-        """Fetches required information for home base request"""
-
         endpoint_name = "/fetch_home_base"
         if not (self.user_profile and "data" in self.user_profile and "info" in self.user_profile["data"] and self.user_profile["data"]["info"] and "membershipNumber" in self.user_profile["data"]["info"]):
             return {}
         data = {"membership": self.user_profile["data"]["info"]["membershipNumber"]}
-        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
-        return output
-
-    def fetch_report_types(self):
-        """fetches list of available record types"""
-
-        endpoint_name = "/fetch_report_types"
-        data = {}
-        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
-        return output
-    
-    def fetch_conditions(self):
-        """fetches list of available conditions for pathway breakup and member stratification"""
-
-        endpoint_name = "/fetch_conditions"
-        data = {}
-        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
-        return output
-
-    def fetch_break_reasons(self):
-        """Fetches break reason to add break"""
-
-        endpoint_name = "/fetch_break_reasons"
-        data = {}
-        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
-        return output
-    
-   
-    def fetch_dismiss_reasons(self):
-        """Fetches dismiss reasons"""
-
-        endpoint_name = "/fetch_dropdown_list"
-        data = {"settingKeyword": "taskdismissreasoncncall"}
-        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
-        return output
-    
-    def fetch_complete_reasons(self):
-        """Fetches dismiss reasons"""
-
-        endpoint_name = "/fetch_dropdown_list"
-        data = {"settingKeyword": "taskcompletionmemberreachout"}
-        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
-        return output
-    
-    def fetch_care_navigator_list(self):
-        """Fetches care navigator list"""
-
-        endpoint_name = "/care_navigator_list"
-        data = {"excludeCapacityExhausted": "", "excludeSelf": "", "hideReadOnly": "Y", "supervisor": ""}
-        output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
-        return output
+        return make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
 
     def fetch_last_7days_task_insights(self):
-        """Fetches all tasks list for all member's under care navigator"""
-
         try:
             membershipNumber = ""
             if (self.user_profile and "data" in self.user_profile and "info" in self.user_profile["data"] and self.user_profile["data"]["info"]):
                 info = self.user_profile["data"]["info"]
                 membershipNumber = info.get("membershipNumber", "")
             endpoint_name = "/fetch_task_list"
-
             data = {
                 "startDate": (date.today() - timedelta(days=7)).strftime("%Y-%m-%d"),
                 "endDate": date.today().strftime("%Y-%m-%d"),
@@ -338,7 +309,8 @@ class DynamicConstants:
                 "searchTaskType": "",
                 "searchPriority": "",
                 "searchStatus": "",
-                "searchCarenavigator": self.current_cn,
+                # "searchCarenavigator": self.current_cn,
+                "searchCarenavigator": "",
                 "searchPrograms": "",
                 "searchConditions": "",
                 "searchCompletedBy": "",
@@ -350,7 +322,6 @@ class DynamicConstants:
                 "sortDirection": "asc",
                 "download": "N"
             }
-            output = make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
-            return output
+            return make_request(data=data, endpoint_name=endpoint_name, access_token=self.access_token)
         except Exception as e:
             return {"error": "Sorry, I can't fetch care navigator's task list at the moment. Please try again later."}

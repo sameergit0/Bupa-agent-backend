@@ -58,7 +58,7 @@ from google.genai.errors import ClientError
 
 from tool_config import GEMINI_API_KEY, TOOLS
 from tool_funcs import TOOL_MAP
-from constants import DynamicConstants
+from constants import DynamicConstants, StaticConstants
 from system_prompt import get_system_prompt
 
 logger = logging.getLogger("llm_client")
@@ -79,11 +79,11 @@ def _sleep_with_jitter(base: float, attempt: int) -> None:
     time.sleep(delay)
 
 class LLMChatSession:
-    def __init__(self, user_id: str, access_token: str, cn_id: Optional[str] = None):
+    def __init__(self, user_id: str, access_token: str, cn_id: Optional[str], static_constants: StaticConstants):
         self.user_id = user_id if user_id is not None else ""
         self.access_token = access_token
         self.cn_id = cn_id
-        self.dynamic_constants = DynamicConstants(user_id, access_token, cn_id)
+        self.dynamic_constants = DynamicConstants(user_id, access_token, cn_id, static_constants)
         self.dynamic_constants.load()
         
         session_tool_map = {}

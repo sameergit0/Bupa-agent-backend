@@ -28,7 +28,7 @@ def get_system_prompt(dynamic_constants: DynamicConstants) -> str:
                         4. **Crucial Formatting Rules:**
                                 - The heading is the ONLY bold text.
                                 - Absolutely NO asterisks, hyphens, or other list markers. The output must be plain text.
-                        5. **Conclusion:** End with the question: 'Would you like me to show you your full task list to get started?'"
+                        5. **Conclusion:** End with the question: 'Would you like me to show you your overdue, risk, and at risk task list to get started?'"
     Context:
         - Platform: Care Navigator.
         - You are talking with care navigator.
