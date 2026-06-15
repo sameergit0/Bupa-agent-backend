@@ -153,3 +153,5 @@ Thumbs.db
 *.pfx
 certificate.pem
 private-key.pem
+
+.env
